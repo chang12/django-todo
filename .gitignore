@@ -157,3 +157,4 @@ ENV/
 # Rope project settings
 .ropeproject
 .idea/
+todo/post/migrations/

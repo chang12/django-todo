@@ -13,3 +13,6 @@
     {% endfor %}
     <input type="submit">
 </form>
+{% for task in tasks %}
+    <p>{{ task.title }}</p>
+{% endfor %}

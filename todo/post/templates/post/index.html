@@ -1,4 +1,4 @@
-<a href={% url "logout" %}>로그아웃</a>
+<a href="{% url "logout" %}?next={% url "post:index" %}">로그아웃</a>
 <form action="" method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -14,5 +14,9 @@
     <input type="submit">
 </form>
 {% for task in tasks %}
-    <p>{{ task.title }}</p>
+    <p>
+        {{ task.title }}
+        <button>상승</button>
+        <button>하강</button>
+    </p>
 {% endfor %}

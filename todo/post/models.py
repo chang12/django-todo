@@ -17,7 +17,7 @@ class Task(models.Model):
         if Task.objects.count() == 0:
             self.priority = 0
         else:
-            self.priority = Task.objects.all().aggregate(models.Max('priority'))['priority__max']
+            self.priority = Task.objects.all().aggregate(models.Max('priority'))['priority__max'] + 1.0
         super(Task, self).save(*args, **kwargs)
 
     def __str__(self):

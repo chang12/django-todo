@@ -1,0 +1,15 @@
+<a href={% url "logout" %}>로그아웃</a>
+<form action="" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="fieldWrapper">
+        {{ field.errors }}
+        <p>{{ field.label_tag }}</p>
+        <p>{{ field }}</p>
+        {% if field.help_text %}
+            <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+        </div>
+    {% endfor %}
+    <input type="submit">
+</form>

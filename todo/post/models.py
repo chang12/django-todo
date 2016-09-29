@@ -7,8 +7,18 @@ from django.db import models
 # 이 방식을 따를 경우 어떤 task의 우선순위를 변경해도, 다른 taks들의 우선순위 값 변동이 없다!
 class Task(models.Model):
     title = models.CharField(max_length=30)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     priority = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if Task.objects.count() == 0:
+            self.priority = 0
+        else:
+            self.priority = Task.objects.all().aggregate(models.Max('priority'))['priority__max']
+        super(Task, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title

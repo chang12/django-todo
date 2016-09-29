@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from .views import index
+from .views import TaskView
 
 urlpatterns = [
-    url(r'^$', index),
+    url(r'^$', TaskView.as_view(), name='index'),
 ]

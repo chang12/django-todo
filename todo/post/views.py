@@ -1,5 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render, reverse
 
 from .forms import TaskForm
 from .models import Task
@@ -11,6 +11,7 @@ def index(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             form.save()
+            return redirect(reverse('post:index'))
     form = TaskForm()
     return render(request, 'post/index.html', {
         'form': form,

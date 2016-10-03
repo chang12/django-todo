@@ -20,7 +20,8 @@ def index(request):
 
 
 @staff_member_required()
-def erase(request, pk):
+def finish(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    task.delete()
+    task.is_active = False
+    task.save()
     return redirect(reverse('post:index'))

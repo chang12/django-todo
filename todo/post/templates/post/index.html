@@ -47,7 +47,7 @@
         $('.list-group-item > :checkbox').each(function(){
             $(this).click(function(){
                 var id = $(this).attr("id");
-                var url = "{% url 'post:erase' 12345 %}".replace(/12345/, id);
+                var url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
                 window.location.href = url;
             })
         })

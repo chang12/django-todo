@@ -34,10 +34,12 @@
     </form>
 </div>
 
-{% for task in tasks %}
-    <div><p>
-        {{ task.title }}
-    </p></div>
-{% endfor %}
+<div class="container">
+    <div class="list-group">
+        {% for task in tasks %}
+            <a href="#" class="list-group-item list-group-item-success">{{ task.title }}</a>
+        {% endfor %}
+    </div>
+</div>
 
 </body>

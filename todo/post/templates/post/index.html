@@ -46,8 +46,15 @@
 </div>
 
 <script>
+    // 모든 button 들을 비활성화 시켜주는 함수
+    function hideAllButtonsOfTasks() {
+        $(".list-group-item > button").each(function(){
+           $(this).hide();
+        });
+    }
+
     $('document').ready(function(){
-        // checkbox 들에 click event listener 등록
+        // button 들에 click event listener 등록
         $(".list-group-item > button").each(function(){
             $(this).click(function(){
                 var id = $(this).attr("id");
@@ -55,11 +62,23 @@
                 window.location.href = url;
             })
         });
-        // list-group-item 들에 checkbox toggling 시키는 click event handler 등록
+
+        // list-group-item 들에 button toggling 시키는 click event handler 등록
         $(".list-group-item").each(function(){
             $(this).click(function(){
-               $(this).children("button").toggle();
+                var button = $(this).children("button");
+                if(button.css("display") == "none") {
+                    hideAllButtonsOfTasks();
+                }
+                button.toggle(); // 해당 list-group-item의 버튼은 toggling
             });
+        });
+
+        // body의 빈공간에 click event handler 등록
+        $("body").click(function(e){
+           if(e.target == this) {
+               hideAllButtonsOfTasks();
+           }
         });
     })
 </script>

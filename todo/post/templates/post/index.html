@@ -70,6 +70,15 @@
                 button.toggle();
             });
         });
+
+        // body의 빈공간에 click event handler 등록
+        $("body").click(function(e){
+           if(e.target == this) {
+               $(".list-group-item > button").each(function(){
+                  $(this).hide();
+               });
+           }
+        });
     })
 </script>
 </body>

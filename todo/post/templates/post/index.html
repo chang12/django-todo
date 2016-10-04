@@ -39,7 +39,9 @@
         {% for task in tasks %}
             <li class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
-                <button id="{{ task.pk }}" class="btn btn-info btn-sm" style="float: right; display: none;">완료</button>
+                <button id="{{ task.pk }}" class="btn btn-info btn-sm btn-finish" style="float: right; display: none;">완료</button>
+                <button class="btn btn-default btn-sm" style="float: right; display: none;">하강</button>
+                <button class="btn btn-default btn-sm" style="float: right; display: none;">상승</button>
             </li>
         {% endfor %}
     </div>
@@ -54,8 +56,8 @@
     }
 
     $('document').ready(function(){
-        // button 들에 click event listener 등록
-        $(".list-group-item > button").each(function(){
+        // "완료" button 들에 click event listener 등록
+        $(".list-group-item > .btn-finish").each(function(){
             $(this).click(function(){
                 var id = $(this).attr("id");
                 var url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);

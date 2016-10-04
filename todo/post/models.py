@@ -57,7 +57,7 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
-    def list_button_id(self):
+    def lift_button_id(self):
         return Task.BUTTON_UP_TAG + '-' + str(self.pk)
 
     def fall_button_id(self):

@@ -1,3 +1,5 @@
+from statistics import mean
+
 from django.db import models
 
 
@@ -9,7 +11,30 @@ class TaskManager(models.Manager):
             return self.get_queryset().all().aggregate(models.Max('priority'))['priority__max']
 
     def lift(self, pk):
-        pass
+        sorted_tasks = self.get_queryset().filter(is_active=True).order_by('-priority')
+        for idx, task in enumerate(sorted_tasks):
+            if task.pk == int(pk):
+                break
+        if idx == 0:
+            return
+        elif idx == 1:
+            task.priority = sorted_tasks[0].priority + 1.0
+        else:
+            task.priority = mean([sorted_tasks[idx-2].priority, sorted_tasks[idx-1].priority])
+        task.save()
+
+    def fall(self, pk):
+        sorted_tasks = self.get_queryset().filter(is_active=True).order_by('priority')
+        for idx, task in enumerate(sorted_tasks):
+            if task.pk == int(pk):
+                break
+        if idx == 0:
+            return
+        elif idx == 1:
+            task.priority = sorted_tasks[0].priority - 1.0
+        else:
+            task.priority = mean([sorted_tasks[idx-2].priority, sorted_tasks[idx-1].priority])
+        task.save()
 
 
 # priority를 float 타입으로 설정하는 이유:

@@ -37,7 +37,10 @@
 <div class="container">
     <div class="list-group">
         {% for task in tasks %}
-            <li class="list-group-item list-group-item-success"><input type="checkbox" id="{{ task.pk }}" style="display: none;">{{ task.title }}</li>
+            <li class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
+                {{ task.title }}
+                <button id="{{ task.pk }}" class="btn btn-info btn-sm" style="float: right; display: none;">완료</button>
+            </li>
         {% endfor %}
     </div>
 </div>
@@ -45,7 +48,7 @@
 <script>
     $('document').ready(function(){
         // checkbox 들에 click event listener 등록
-        $(".list-group-item > :checkbox").each(function(){
+        $(".list-group-item > button").each(function(){
             $(this).click(function(){
                 var id = $(this).attr("id");
                 var url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
@@ -55,7 +58,7 @@
         // list-group-item 들에 checkbox toggling 시키는 click event handler 등록
         $(".list-group-item").each(function(){
             $(this).click(function(){
-               $(this).children(":checkbox").toggle();
+               $(this).children("button").toggle();
             });
         });
     })

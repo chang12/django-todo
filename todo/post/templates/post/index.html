@@ -40,8 +40,8 @@
             <li class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
                 <button id="{{ task.pk }}" class="btn btn-info btn-sm btn-finish" style="float: right; display: none;">완료</button>
-                {% if not forloop.last %}<button id="{{ task.button_id_down }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">하강</button>{% endif %}
-                {% if not forloop.first %}<button id="{{ task.button_id_up }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">상승</button>{% endif %}
+                {% if not forloop.last %}<button id="{{ task.fall_button_id }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">하강</button>{% endif %}
+                {% if not forloop.first %}<button id="{{ task.lift_button_id }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">상승</button>{% endif %}
             </li>
         {% endfor %}
     </div>

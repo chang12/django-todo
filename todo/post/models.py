@@ -1,6 +1,17 @@
 from django.db import models
 
 
+class TaskManager(models.Manager):
+    def max_priority(self):
+        if self.get_queryset().count() == 0:
+            return 0
+        else:
+            return self.get_queryset().all().aggregate(models.Max('priority'))['priority__max']
+
+    def lift(self, pk):
+        pass
+
+
 # priority를 float 타입으로 설정하는 이유:
 # 새로 등록할 경우 -> 기존 맥시멈 + a
 # 우선순위를 위아래로 변경할 경우 -> 끼어들어가야 할 자리 위/아래 priority 값의 평균
@@ -16,6 +27,8 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    objects = TaskManager()
+
     def __str__(self):
         return self.title
 
@@ -24,10 +37,3 @@ class Task(models.Model):
 
     def button_id_down(self):
         return Task.BUTTON_DOWN_TAG + '-' + str(self.pk)
-
-    def save(self, *args, **kwargs):
-        if Task.objects.count() == 0:
-            self.priority = 0
-        else:
-            self.priority = Task.objects.all().aggregate(models.Max('priority'))['priority__max'] + 1.0
-        super(Task, self).save(*args, **kwargs)

@@ -77,6 +77,35 @@
     $('document').ready(function(){
         $(".button-group > .btn-add").show();
 
+        // list-group-item 들에 button toggling 시키는 click event handler 등록
+        $(".list-group-item").each(function(){
+            $(this).click(function(e){
+                if (e.target == this) {
+                    if ($(this).hasClass("list-group-item-warning")) {
+                        // 나를 선택 해제하고, 버튼들도 끈다.
+                        $(this).toggleClass("list-group-item-warning", false);
+                        $(".button-group > button").hide();
+                        $(".button-group > .btn-add").show();
+                    } else {
+                        // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
+                        removeListGroupItemWarningClass();
+                        $(this).toggleClass("list-group-item-warning", true);
+                        $(".button-group > button").show();
+                        $(".button-group > .btn-add").hide();
+                    }
+                }
+            });
+        });
+
+        // body의 빈공간에 click event handler 등록
+        $("body").click(function(e){
+           if(e.target == this) {
+               removeListGroupItemWarningClass();
+               $(".button-group > button").hide();
+               $(".button-group > .btn-add").show();
+           }
+        });
+
         // "완료" button의 click event listener 등록
         $(".btn-finish").each(function(){
             $(this).click(function(){
@@ -111,35 +140,6 @@
                     window.location.href = base_url;
                 }
             });
-        });
-
-        // list-group-item 들에 button toggling 시키는 click event handler 등록
-        $(".list-group-item").each(function(){
-            $(this).click(function(e){
-                if (e.target == this) {
-                    if ($(this).hasClass("list-group-item-warning")) {
-                        // 나를 선택 해제하고, 버튼들도 끈다.
-                        $(this).toggleClass("list-group-item-warning", false);
-                        $(".button-group > button").hide();
-                        $(".button-group > .btn-add").show();
-                    } else {
-                        // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
-                        removeListGroupItemWarningClass();
-                        $(this).toggleClass("list-group-item-warning", true);
-                        $(".button-group > button").show();
-                        $(".button-group > .btn-add").hide();
-                    }
-                }
-            });
-        });
-
-        // body의 빈공간에 click event handler 등록
-        $("body").click(function(e){
-           if(e.target == this) {
-               removeListGroupItemWarningClass();
-               $(".button-group > button").hide();
-               $(".button-group > .btn-add").show();
-           }
         });
     })
 </script>

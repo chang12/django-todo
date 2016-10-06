@@ -28,10 +28,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">텍스트</h4>
+                <h4 class="modal-title" id="task-title"></h4>
             </div>
             <div class="modal-body">
-                <p>어쩌고저쩌고</p>
+                <p id="task-content"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
@@ -104,6 +104,13 @@
                $(".button-group > button").hide();
                $(".button-group > .btn-add").show();
            }
+        });
+
+        // modal 띄울때 선택한 Task 내용 반영
+        $("#myModal").on('show.bs.modal', function (event) {
+            var clicked_task = $(".list-group-item-warning");
+            $("#task-title").text(clicked_task.attr("id"));
+            $("#task-content").text(clicked_task.attr("id"));
         });
 
         // "완료" button의 click event listener 등록

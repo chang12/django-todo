@@ -20,6 +20,9 @@
         .button-group > .btn-detail, .btn-lift, .btn-fall, .btn-finish {
             display: none;
         }
+        .list-group-item > div {
+            display: none;
+        }
     </style>
 </head>
 
@@ -62,6 +65,8 @@
         {% for task in tasks %}
             <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
+                <div class="task-title">{{ task.title }}</div>
+                <div class="task-content">{{ task.content }}</div>
             </li>
         {% endfor %}
     </div>
@@ -109,8 +114,10 @@
         // modal 띄울때 선택한 Task 내용 반영
         $("#myModal").on('show.bs.modal', function (event) {
             var clicked_task = $(".list-group-item-warning");
-            $("#task-title").text(clicked_task.attr("id"));
-            $("#task-content").text(clicked_task.attr("id"));
+            var title = clicked_task.children(".task-title").text();
+            var content = clicked_task.children(".task-content").text();
+            $("#task-title").text(title);
+            $("#task-content").text(content);
         });
 
         // "완료" button의 click event listener 등록
@@ -127,14 +134,12 @@
 
         // "상승" button의 click event listener 등록
         $(".btn-lift").each(function(){
-            $(this).click(function(){
-                var clicked_task = $(".list-group-item-warning");
-                if (clicked_task.length > 0) {
-                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
-                    var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
-                    window.location.href = base_url;
-                }
-            });
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                window.location.href = base_url;
+            }
         });
 
         // "하강" button의 click event listener 등록

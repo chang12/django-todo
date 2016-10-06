@@ -52,13 +52,6 @@
 </div>
 
 <script>
-    // 모든 button 들을 비활성화 시켜주는 함수
-    function hideAllButtonsOfTasks() {
-        $(".list-group-item > button").each(function(){
-           $(this).hide();
-        });
-    }
-
     function removeListGroupItemWarningClass() {
         $(".list-group-item").each(function() {
             $(this).toggleClass("list-group-item-warning", false);

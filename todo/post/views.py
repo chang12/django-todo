@@ -16,6 +16,8 @@ def index(request):
     return render(request, 'post/index.html', {
         'form': form,
         'tasks': Task.objects.filter(is_active=True).order_by('-priority'),
+        'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
+        'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
     })
 
 
@@ -30,8 +32,8 @@ def finish(request, pk):
 @staff_member_required()
 def modify(request, command):
     fragments = command.split('-')
-    if fragments[0] == Task.BUTTON_UP_TAG:
+    if fragments[0] == Task.BUTTON_LIFT_TAG:
         Task.objects.lift(fragments[1])
-    elif fragments[0] == Task.BUTTON_DOWN_TAG:
+    elif fragments[0] == Task.BUTTON_FALL_TAG:
         Task.objects.fall(fragments[1])
     return redirect(reverse('post:index'))

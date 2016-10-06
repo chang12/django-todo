@@ -15,8 +15,10 @@
             height: 40px;
         }
         .button-group > button {
-            display: none;
             vertical-align: middle;
+        }
+        .button-group > .btn-lift, .btn-fall, .btn-finish {
+            display: none;
         }
     </style>
 </head>
@@ -33,15 +35,15 @@
 
 <div class="button-group">
     <button type="button" class="btn btn-warning btn-sm btn-add">추가</button>
-    <button type="button" class="btn btn-default btn-sm btn-move">상승</button>
-    <button type="button" class="btn btn-default btn-sm btn-move">하강</button>
+    <button type="button" class="btn btn-default btn-sm btn-lift">상승</button>
+    <button type="button" class="btn btn-default btn-sm btn-fall">하강</button>
     <button type="button" class="btn btn-info btn-sm btn-finish">완료</button>
 </div>
 
 <div class="container">
     <div class="list-group">
         {% for task in tasks %}
-            <li class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
+            <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
             </li>
         {% endfor %}
@@ -65,21 +67,39 @@
     $('document').ready(function(){
         $(".button-group > .btn-add").show();
 
-        // "완료" button 들에 click event listener 등록
-        $(".list-group-item > .btn-finish").each(function(){
+        // "완료" button의 click event listener 등록
+        $(".btn-finish").each(function(){
             $(this).click(function(){
-                var id = $(this).attr("id");
-                var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
+                var clicked_task = $(".list-group-item-warning");
+                if (clicked_task.length > 0) {
+                    var id = clicked_task.attr("id");
+                    var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
+                    window.location.href = base_url;
+                }
             });
         });
 
-        // "상승", "하강" button 들에 click event listener 등록
-        $(".list-group-item > .btn-move").each(function(){
+        // "상승" button의 click event listener 등록
+        $(".btn-lift").each(function(){
             $(this).click(function(){
-                var id = $(this).attr("id");
-                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, id);
-                window.location.href = base_url;
+                var clicked_task = $(".list-group-item-warning");
+                if (clicked_task.length > 0) {
+                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                    var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                    window.location.href = base_url;
+                }
+            });
+        });
+
+        // "하강" button의 click event listener 등록
+        $(".btn-fall").each(function(){
+            $(this).click(function(){
+                var clicked_task = $(".list-group-item-warning");
+                if (clicked_task.length > 0) {
+                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
+                    var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                    window.location.href = base_url;
+                }
             });
         });
 

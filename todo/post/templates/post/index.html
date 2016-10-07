@@ -37,7 +37,7 @@
                 <p id="task-content"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning">수정</button>
+                <button type="button" class="btn btn-warning btn-modify">수정</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
@@ -153,7 +153,16 @@
 
         // "수정" button의 click event listener 등록
         $(".btn-modify").click( function() {
-
+            // 내용물을 감춘다.
+            $("#task-title").hide();
+            $("#task-content").hide();
+            // input 태그를 띄운다.
+            $(".modal-header").html('<input type="text" class="form-control" placeholder="제목" name="title">');
+            $(".modal-body").html('<textarea class="form-control" placeholder="내용" name="content"></textarea>');
+            // "수정" button이 "저장" button으로 바뀐다.
+            $(this).text("저장");
+            $(this).toggleClass(".btn-modify", false);
+            $(this).toggleClass(".btn-save", false);
         });
     })
 </script>

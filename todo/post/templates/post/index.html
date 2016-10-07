@@ -32,12 +32,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="task-title"></h4>
+                <input type="text" class="form-control" name="title">
             </div>
             <div class="modal-body">
                 <p id="task-content"></p>
+                <textarea class="form-control" name="content"></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning">수정</button>
+                <button type="button" class="btn btn-warning btn-modify">수정</button>
+                <button type="button" class="btn btn-warning btn-save">저장</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
@@ -83,7 +86,7 @@
     $('document').ready(function(){
         $(".button-group > .btn-add").show();
 
-        // list-group-item 들에 button toggling 시키는 click event handler 등록
+        // list-group-item 들의 click event
         $(".list-group-item").each(function(){
             $(this).click(function(e){
                 if (e.target == this) {
@@ -103,7 +106,7 @@
             });
         });
 
-        // body의 빈공간에 click event handler 등록
+        // body 빈공간의 click event
         $("body").click(function(e){
            if(e.target == this) {
                removeListGroupItemWarningClass();
@@ -112,47 +115,92 @@
            }
         });
 
-        // modal 띄울때 선택한 Task 내용 반영
+        // modal 보여질때 event
         $("#myModal").on('show.bs.modal', function (event) {
+            // input 태그들을 감춘다.
+            $(".modal-header > input").hide();
+            $(".modal-body > textarea").hide();
+            // task 내용 보여주는 태그들을 나타낸다.
+            $("#task-title").show();
+            $("#task-content").show();
+            // task 내용 보여주는 태그들의 내용을 채운다.
             var clicked_task = $(".list-group-item-warning");
             var title = clicked_task.children(".task-title").text();
             var content = clicked_task.children(".task-content").text();
             $("#task-title").text(title);
             $("#task-content").text(content);
+            // "수정" button으로 초기화한다.
+            $(".modal-footer > .btn-modify").show();
+            $(".modal-footer > .btn-save").hide();
         });
 
-        // "완료" button의 click event listener 등록
-        $(".btn-finish").each(function(){
-            $(this).click(function(){
-                var clicked_task = $(".list-group-item-warning");
-                if (clicked_task.length > 0) {
-                    var id = clicked_task.attr("id");
-                    var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
-                    window.location.href = base_url;
-                }
-            });
+        // "수정" button의 click event
+        $(".btn-modify").click( function() {
+            // 내용물을 감춘다.
+            $("#task-title").hide();
+            $("#task-content").hide();
+            // input 태그를 띄운다.
+            var task_title_input = $(".modal-header > input");
+            var task_content_input = $(".modal-body > textarea");
+            task_title_input.show();
+            task_content_input.show();
+            // 각 입력 태그의 기본값을 설정한다.
+            var clicked_task_title = $(".list-group-item-warning > .task-title").text();
+            var clicked_task_content = $(".list-group-item-warning > .task-content").text();
+            task_title_input.val(clicked_task_title);
+            task_content_input.val(clicked_task_content);
+            // "저장" button을 나타낸다.
+            $(this).hide();
+            $(".modal-footer > .btn-save").show();
         });
 
-        // "상승" button의 click event listener 등록
-        $(".btn-lift").each(function(){
+        // "저장" button의 click event
+        $(".btn-save").click( function() {
+            var title = $(".modal-header > input").val();
+            var content = $(".modal-body > textarea").val();
+            var id = $(".list-group-item-warning").attr("id")
+            var url = "{% url 'post:modify' 12345 %}".replace(/12345/, id);
+            $.post(
+                    url,
+                    {
+                        title: title,
+                        content: content,
+                        csrfmiddlewaretoken: "{{ csrf_token }}"
+                    },
+                    function() {
+                        document.location = "{% url 'post:index' %}";
+                    }
+            );
+        });
+
+        // "완료" button의 click event
+        $(".btn-finish").click(function(){
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
-                var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
-                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                var id = clicked_task.attr("id");
+                var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
                 window.location.href = base_url;
             }
         });
 
-        // "하강" button의 click event listener 등록
-        $(".btn-fall").each(function(){
-            $(this).click(function(){
-                var clicked_task = $(".list-group-item-warning");
-                if (clicked_task.length > 0) {
-                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
-                    var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
-                    window.location.href = base_url;
-                }
-            });
+        // "상승" button의 click event
+        $(".btn-lift").click(function(){
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
+                window.location.href = base_url;
+            }
+        });
+
+        // "하강" button의 click event
+        $(".btn-fall").click(function(){
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
+                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
+                window.location.href = base_url;
+            }
         });
     })
 </script>

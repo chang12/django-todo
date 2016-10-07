@@ -40,6 +40,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning btn-modify">수정</button>
+                <button type="button" class="btn btn-warning btn-save">저장</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
@@ -129,10 +130,8 @@
             $("#task-title").text(title);
             $("#task-content").text(content);
             // "수정" button으로 초기화한다.
-            modal_button = $(".modal-footer > .btn-warning");
-            modal_button.text("수정");
-            modal_button.toggleClass("btn-modify", true);
-            modal_button.toggleClass("btn-save", true);
+            $(".modal-footer > .btn-modify").show();
+            $(".modal-footer > .btn-save").hide();
         });
 
         // "수정" button의 click event
@@ -151,9 +150,8 @@
             task_title_input.val(clicked_task_title);
             task_content_input.text(clicked_task_content);
             // "수정" button이 "저장" button으로 바뀐다.
-            $(this).text("저장");
-            $(this).toggleClass(".btn-modify", false);
-            $(this).toggleClass(".btn-save", false);
+            $(this).hide();
+            $(".modal-footer > .btn-save").show();
         });
 
         // "완료" button의 click event

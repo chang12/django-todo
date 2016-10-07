@@ -32,11 +32,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="task-title"></h4>
-                <input type="text" class="form-control" placeholder="제목" name="title">
+                <input type="text" class="form-control" name="title">
             </div>
             <div class="modal-body">
                 <p id="task-content"></p>
-                <textarea class="form-control" placeholder="내용" name="content"></textarea>
+                <textarea class="form-control" name="content"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning btn-modify">수정</button>
@@ -141,8 +141,15 @@
             $("#task-title").hide();
             $("#task-content").hide();
             // input 태그를 띄운다.
-            $(".modal-header > input").show();
-            $(".modal-body > textarea").show();
+            var task_title_input = $(".modal-header > input");
+            var task_content_input = $(".modal-body > textarea");
+            task_title_input.show();
+            task_content_input.show();
+            // 각 입력 태그의 기본값을 설정한다.
+            var clicked_task_title = $(".list-group-item-warning > .task-title").text();
+            var clicked_task_content = $(".list-group-item-warning > .task-content").text();
+            task_title_input.val(clicked_task_title);
+            task_content_input.text(clicked_task_content);
             // "수정" button이 "저장" button으로 바뀐다.
             $(this).text("저장");
             $(this).toggleClass(".btn-modify", false);

@@ -169,7 +169,7 @@
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
                 var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
-                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
                 window.location.href = base_url;
             }
         });
@@ -179,7 +179,7 @@
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
                 var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
-                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
                 window.location.href = base_url;
             }
         });

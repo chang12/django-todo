@@ -30,10 +30,22 @@ def finish(request, pk):
 
 
 @staff_member_required()
-def modify(request, command):
+def move(request, command):
     fragments = command.split('-')
     if fragments[0] == Task.BUTTON_LIFT_TAG:
         Task.objects.lift(fragments[1])
     elif fragments[0] == Task.BUTTON_FALL_TAG:
         Task.objects.fall(fragments[1])
+    return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def modify(request, pk):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        task = get_object_or_404(Task, pk=pk)
+        task.title = title
+        task.content = content
+        task.save()
     return redirect(reverse('post:index'))

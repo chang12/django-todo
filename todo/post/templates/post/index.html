@@ -9,9 +9,41 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        .button-group {
+            height: 40px;
+        }
+        .button-group > button {
+            vertical-align: middle;
+        }
+        .button-group > .btn-detail, .btn-lift, .btn-fall, .btn-finish {
+            display: none;
+        }
+        .list-group-item > div {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="task-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p id="task-content"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning">수정</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -21,68 +53,52 @@
     </div>
 </nav>
 
-<div class="container">
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="제목" name="title">
-        </div>
-        <div class="form-group">
-            <textarea class="form-control" placeholder="내용" name="content"></textarea>
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+<div class="button-group">
+    <button type="button" class="btn btn-warning btn-sm btn-add">추가</button>
+    <button type="button" class="btn btn-info btn-sm btn-detail" data-toggle="modal" data-target="#myModal">상세</button>
+    <button type="button" class="btn btn-default btn-sm btn-lift">상승</button>
+    <button type="button" class="btn btn-default btn-sm btn-fall">하강</button>
+    <button type="button" class="btn btn-danger btn-sm btn-finish">완료</button>
 </div>
 
 <div class="container">
     <div class="list-group">
         {% for task in tasks %}
-            <li class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
+            <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
-                <button id="{{ task.pk }}" class="btn btn-info btn-sm btn-finish" style="float: right; display: none;">완료</button>
-                {% if not forloop.last %}<button id="{{ task.fall_button_id }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">하강</button>{% endif %}
-                {% if not forloop.first %}<button id="{{ task.lift_button_id }}" class="btn btn-default btn-sm btn-move" style="float: right; display: none;">상승</button>{% endif %}
+                <div class="task-title">{{ task.title }}</div>
+                <div class="task-content">{{ task.content }}</div>
             </li>
         {% endfor %}
     </div>
 </div>
 
 <script>
-    // 모든 button 들을 비활성화 시켜주는 함수
-    function hideAllButtonsOfTasks() {
-        $(".list-group-item > button").each(function(){
-           $(this).hide();
-        });
+    function removeListGroupItemWarningClass() {
+        $(".list-group-item").each(function() {
+            $(this).toggleClass("list-group-item-warning", false);
+        })
     }
 
     $('document').ready(function(){
-        // "완료" button 들에 click event listener 등록
-        $(".list-group-item > .btn-finish").each(function(){
-            $(this).click(function(){
-                var id = $(this).attr("id");
-                var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
-            });
-        });
-
-        // "상승", "하강" button 들에 click event listener 등록
-        $(".list-group-item > .btn-move").each(function(){
-            $(this).click(function(){
-                var id = $(this).attr("id");
-                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, id);
-                window.location.href = base_url;
-            });
-        });
+        $(".button-group > .btn-add").show();
 
         // list-group-item 들에 button toggling 시키는 click event handler 등록
         $(".list-group-item").each(function(){
             $(this).click(function(e){
                 if (e.target == this) {
-                    var button = $(this).children("button");
-                    if(button.css("display") == "none") {
-                        hideAllButtonsOfTasks();
+                    if ($(this).hasClass("list-group-item-warning")) {
+                        // 나를 선택 해제하고, 버튼들도 끈다.
+                        $(this).toggleClass("list-group-item-warning", false);
+                        $(".button-group > button").hide();
+                        $(".button-group > .btn-add").show();
+                    } else {
+                        // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
+                        removeListGroupItemWarningClass();
+                        $(this).toggleClass("list-group-item-warning", true);
+                        $(".button-group > button").show();
+                        $(".button-group > .btn-add").hide();
                     }
-                    button.toggle(); // 해당 list-group-item의 버튼은 toggling
                 }
             });
         });
@@ -90,8 +106,53 @@
         // body의 빈공간에 click event handler 등록
         $("body").click(function(e){
            if(e.target == this) {
-               hideAllButtonsOfTasks();
+               removeListGroupItemWarningClass();
+               $(".button-group > button").hide();
+               $(".button-group > .btn-add").show();
            }
+        });
+
+        // modal 띄울때 선택한 Task 내용 반영
+        $("#myModal").on('show.bs.modal', function (event) {
+            var clicked_task = $(".list-group-item-warning");
+            var title = clicked_task.children(".task-title").text();
+            var content = clicked_task.children(".task-content").text();
+            $("#task-title").text(title);
+            $("#task-content").text(content);
+        });
+
+        // "완료" button의 click event listener 등록
+        $(".btn-finish").each(function(){
+            $(this).click(function(){
+                var clicked_task = $(".list-group-item-warning");
+                if (clicked_task.length > 0) {
+                    var id = clicked_task.attr("id");
+                    var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
+                    window.location.href = base_url;
+                }
+            });
+        });
+
+        // "상승" button의 click event listener 등록
+        $(".btn-lift").each(function(){
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                window.location.href = base_url;
+            }
+        });
+
+        // "하강" button의 click event listener 등록
+        $(".btn-fall").each(function(){
+            $(this).click(function(){
+                var clicked_task = $(".list-group-item-warning");
+                if (clicked_task.length > 0) {
+                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
+                    var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
+                    window.location.href = base_url;
+                }
+            });
         });
     })
 </script>

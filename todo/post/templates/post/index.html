@@ -32,9 +32,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="task-title"></h4>
+                <input type="text" class="form-control" placeholder="제목" name="title">
             </div>
             <div class="modal-body">
                 <p id="task-content"></p>
+                <textarea class="form-control" placeholder="내용" name="content"></textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning btn-modify">수정</button>
@@ -83,7 +85,7 @@
     $('document').ready(function(){
         $(".button-group > .btn-add").show();
 
-        // list-group-item 들에 button toggling 시키는 click event handler 등록
+        // list-group-item 들의 click event
         $(".list-group-item").each(function(){
             $(this).click(function(e){
                 if (e.target == this) {
@@ -103,7 +105,7 @@
             });
         });
 
-        // body의 빈공간에 click event handler 등록
+        // body 빈공간의 click event
         $("body").click(function(e){
            if(e.target == this) {
                removeListGroupItemWarningClass();
@@ -112,16 +114,42 @@
            }
         });
 
-        // modal 띄울때 선택한 Task 내용 반영
+        // modal 보여질때 event
         $("#myModal").on('show.bs.modal', function (event) {
+            // input 태그들을 감춘다.
+            $(".modal-header > input").hide();
+            $(".modal-body > textarea").hide();
+            // task 내용 보여주는 태그들을 나타낸다.
+            $("#task-title").show();
+            $("#task-content").show();
+            // task 내용 보여주는 태그들의 내용을 채운다.
             var clicked_task = $(".list-group-item-warning");
             var title = clicked_task.children(".task-title").text();
             var content = clicked_task.children(".task-content").text();
             $("#task-title").text(title);
             $("#task-content").text(content);
+            // "수정" button으로 초기화한다.
+            modal_button = $(".modal-footer > .btn-warning");
+            modal_button.text("수정");
+            modal_button.toggleClass("btn-modify", true);
+            modal_button.toggleClass("btn-save", true);
         });
 
-        // "완료" button의 click event listener 등록
+        // "수정" button의 click event
+        $(".btn-modify").click( function() {
+            // 내용물을 감춘다.
+            $("#task-title").hide();
+            $("#task-content").hide();
+            // input 태그를 띄운다.
+            $(".modal-header > input").show();
+            $(".modal-body > textarea").show();
+            // "수정" button이 "저장" button으로 바뀐다.
+            $(this).text("저장");
+            $(this).toggleClass(".btn-modify", false);
+            $(this).toggleClass(".btn-save", false);
+        });
+
+        // "완료" button의 click event
         $(".btn-finish").click(function(){
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
@@ -131,7 +159,7 @@
             }
         });
 
-        // "상승" button의 click event listener 등록
+        // "상승" button의 click event
         $(".btn-lift").click(function(){
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
@@ -141,7 +169,7 @@
             }
         });
 
-        // "하강" button의 click event listener 등록
+        // "하강" button의 click event
         $(".btn-fall").click(function(){
             var clicked_task = $(".list-group-item-warning");
             if (clicked_task.length > 0) {
@@ -149,20 +177,6 @@
                 var base_url = "{% url 'post:modify' 'command' %}".replace(/command/, command);
                 window.location.href = base_url;
             }
-        });
-
-        // "수정" button의 click event listener 등록
-        $(".btn-modify").click( function() {
-            // 내용물을 감춘다.
-            $("#task-title").hide();
-            $("#task-content").hide();
-            // input 태그를 띄운다.
-            $(".modal-header").html('<input type="text" class="form-control" placeholder="제목" name="title">');
-            $(".modal-body").html('<textarea class="form-control" placeholder="내용" name="content"></textarea>');
-            // "수정" button이 "저장" button으로 바뀐다.
-            $(this).text("저장");
-            $(this).toggleClass(".btn-modify", false);
-            $(this).toggleClass(".btn-save", false);
         });
     })
 </script>

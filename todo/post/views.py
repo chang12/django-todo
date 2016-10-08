@@ -11,14 +11,15 @@ def index(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(reverse('post:index'))
-    form = TaskForm()
-    return render(request, 'post/index.html', {
-        'form': form,
-        'tasks': Task.objects.filter(is_active=True).order_by('-priority'),
-        'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
-        'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
-    })
+        return redirect(reverse('post:index'))
+    elif request.method == 'GET':
+        form = TaskForm()
+        return render(request, 'post/index.html', {
+            'form': form,
+            'tasks': Task.objects.filter(is_active=True).order_by('-priority'),
+            'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
+            'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
+        })
 
 
 @staff_member_required()

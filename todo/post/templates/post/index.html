@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        form {
+        #task-form {
             display: none;
         }
         .button-group {
@@ -72,7 +72,7 @@
         <button type="button" class="btn btn-default btn-fall">하강</button>
         <button type="button" class="btn btn-danger btn-finish">완료</button>
     </div>
-    <form action="" method="post">
+    <form action="" method="post" id="task-form">
         {% csrf_token %}
         <div class="form-group">
             <input type="text" class="form-control" placeholder="제목" name="title">
@@ -153,14 +153,19 @@
             $(this).hide();
             $(".btn-post").show();
             $(".btn-cancel").show();
-            $("form").slideDown();
+            $("#task-form").slideDown();
+        });
+
+        // "생성" button의 click event
+        $(".btn-post").click( function() {
+            $("#task-form").submit();
         });
 
         // "취소" button의 click event
         $(".btn-cancel").click( function() {
             $(this).hide();
             $(".btn-post").hide();
-            $("form").slideUp();
+            $("#task-form").slideUp();
             $(".btn-add").show();
         });
 

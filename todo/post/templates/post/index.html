@@ -156,6 +156,14 @@
             $("form").slideDown();
         });
 
+        // "취소" button의 click event
+        $(".btn-cancel").click( function() {
+            $(this).hide();
+            $(".btn-post").hide();
+            $("form").slideUp();
+            $(".btn-add").show();
+        });
+
         // "수정" button의 click event
         $(".btn-modify").click( function() {
             // 내용물을 감춘다.

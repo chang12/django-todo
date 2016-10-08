@@ -113,8 +113,14 @@
                         // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
                         removeListGroupItemWarningClass();
                         $(this).toggleClass("list-group-item-warning", true);
-                        $(".button-group > button").show();
+                        $(".button-group > .btn-detail").show();
+                        $(".button-group > .btn-lift").show();
+                        $(".button-group > .btn-fall").show();
+                        $(".button-group > .btn-finish").show();
                         $(".button-group > .btn-add").hide();
+                        $(".button-group > .btn-post").hide();
+                        $(".button-group > .btn-cancel").hide();
+                        $("#task-form").slideUp();
                     }
                 }
             });

@@ -11,14 +11,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
+        #task-form {
+            display: none;
+        }
         .button-group {
             height: 40px;
         }
         .button-group > button {
             vertical-align: middle;
         }
-        .button-group > .btn-detail, .btn-lift, .btn-fall, .btn-finish {
+        .button-group > button {
             display: none;
+        }
+        .button-group > .btn-add {
+            display: block;
         }
         .list-group-item > div {
             display: none;
@@ -56,15 +62,25 @@
     </div>
 </nav>
 
-<div class="button-group">
-    <button type="button" class="btn btn-warning btn-sm btn-add">추가</button>
-    <button type="button" class="btn btn-info btn-sm btn-detail" data-toggle="modal" data-target="#myModal">상세</button>
-    <button type="button" class="btn btn-default btn-sm btn-lift">상승</button>
-    <button type="button" class="btn btn-default btn-sm btn-fall">하강</button>
-    <button type="button" class="btn btn-danger btn-sm btn-finish">완료</button>
-</div>
-
 <div class="container">
+    <div class="button-group">
+        <button type="button" class="btn btn-warning btn-add">추가</button>
+        <button type="button" class="btn btn-warning btn-post">생성</button>
+        <button type="button" class="btn btn-default btn-cancel">취소</button>
+        <button type="button" class="btn btn-info btn-detail" data-toggle="modal" data-target="#myModal">상세</button>
+        <button type="button" class="btn btn-default btn-lift">상승</button>
+        <button type="button" class="btn btn-default btn-fall">하강</button>
+        <button type="button" class="btn btn-danger btn-finish">완료</button>
+    </div>
+    <form action="" method="post" id="task-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="제목" name="title">
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" placeholder="내용" name="content"></textarea>
+        </div>
+    </form>
     <div class="list-group">
         {% for task in tasks %}
             <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
@@ -84,8 +100,6 @@
     }
 
     $('document').ready(function(){
-        $(".button-group > .btn-add").show();
-
         // list-group-item 들의 click event
         $(".list-group-item").each(function(){
             $(this).click(function(e){
@@ -99,8 +113,14 @@
                         // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
                         removeListGroupItemWarningClass();
                         $(this).toggleClass("list-group-item-warning", true);
-                        $(".button-group > button").show();
+                        $(".button-group > .btn-detail").show();
+                        $(".button-group > .btn-lift").show();
+                        $(".button-group > .btn-fall").show();
+                        $(".button-group > .btn-finish").show();
                         $(".button-group > .btn-add").hide();
+                        $(".button-group > .btn-post").hide();
+                        $(".button-group > .btn-cancel").hide();
+                        $("#task-form").slideUp();
                     }
                 }
             });
@@ -132,6 +152,27 @@
             // "수정" button으로 초기화한다.
             $(".modal-footer > .btn-modify").show();
             $(".modal-footer > .btn-save").hide();
+        });
+
+        // "추가" button의 click event
+        $(".btn-add").click( function() {
+            $(this).hide();
+            $(".btn-post").show();
+            $(".btn-cancel").show();
+            $("#task-form").slideDown();
+        });
+
+        // "생성" button의 click event
+        $(".btn-post").click( function() {
+            $("#task-form").submit();
+        });
+
+        // "취소" button의 click event
+        $(".btn-cancel").click( function() {
+            $(this).hide();
+            $(".btn-post").hide();
+            $("#task-form").slideUp();
+            $(".btn-add").show();
         });
 
         // "수정" button의 click event

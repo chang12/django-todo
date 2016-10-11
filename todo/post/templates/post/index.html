@@ -75,10 +75,12 @@
     <form action="" method="post" id="task-form">
         {% csrf_token %}
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="제목" name="title">
+            <label id="error-title" for="inputError"></label>
+            <input type="text" class="form-control" placeholder="제목" name="title" id="task-form-title">
         </div>
         <div class="form-group">
-            <textarea class="form-control" placeholder="내용" name="content"></textarea>
+            <label id="error-title" for="inputError"></label>
+            <textarea class="form-control" placeholder="내용" name="content" id="task-form-content"></textarea>
         </div>
     </form>
     <div class="list-group">
@@ -164,7 +166,23 @@
 
         // "생성" button의 click event
         $(".btn-post").click( function() {
-            $("#task-form").submit();
+            var task_form_data = $("#task-form").serialize();
+            $.post(
+                    "{% url 'post:index' %}",
+                    task_form_data,
+                    function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            if (response.title) {
+                                $("#error-title").text(response.title);
+                            }
+                            if (response.content) {
+                                $("#error-content").text(response.content);
+                            }
+                        }
+                    }
+            )
         });
 
         // "취소" button의 click event
@@ -172,6 +190,8 @@
             $(this).hide();
             $(".btn-post").hide();
             $("#task-form").slideUp();
+            $("#error-title").empty();
+            $("#error-content").empty();
             $(".btn-add").show();
         });
 

@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from .forms import TaskForm
@@ -11,11 +12,16 @@ def index(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             form.save()
-        return redirect(reverse('post:index'))
+            return JsonResponse({'success': True})
+        else:
+            response_dict = {'success': False}
+            for key, value in form.errors.items():
+                # field 하나에 여러개의 에러가 있다면 첫번째 것만 반환
+                response_dict[key] = value[0]
+            return JsonResponse(response_dict)
+
     elif request.method == 'GET':
-        form = TaskForm()
         return render(request, 'post/index.html', {
-            'form': form,
             'tasks': Task.objects.filter(is_active=True).order_by('-priority'),
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,

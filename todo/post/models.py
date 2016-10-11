@@ -45,7 +45,7 @@ class Task(models.Model):
     BUTTON_LIFT_TAG = "lift"
     BUTTON_FALL_TAG = "fall"
 
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=50)
     content = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     priority = models.FloatField()

@@ -43,7 +43,7 @@ def move(request, command):
         Task.objects.lift(fragments[1])
     elif fragments[0] == Task.BUTTON_FALL_TAG:
         Task.objects.fall(fragments[1])
-    return redirect(reverse('post:index'))
+    return JsonResponse({}, status=200)
 
 
 @staff_member_required()

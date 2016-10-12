@@ -247,20 +247,30 @@
         // "상승" button의 click event
         $(".btn-lift").click(function(){
             var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length > 0) {
-                var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
-                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
-                window.location.href = base_url;
+            if (clicked_task.length == 1) {
+                var above_clicked_task = clicked_task.prev();
+                if (above_clicked_task.length != 0) {
+                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                    var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
+                    $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
+                        clicked_task.after(above_clicked_task);
+                    });
+                }
             }
         });
 
         // "하강" button의 click event
         $(".btn-fall").click(function(){
             var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length > 0) {
-                var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
-                var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
-                window.location.href = base_url;
+            if (clicked_task.length == 1) {
+                var below_clicked_task = clicked_task.next();
+                if (below_clicked_task.length != 0) {
+                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
+                    var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
+                    $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
+                        clicked_task.before(below_clicked_task);
+                    });
+                }
             }
         });
     })

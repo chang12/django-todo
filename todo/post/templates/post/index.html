@@ -98,34 +98,20 @@
 </div>
 
 <script>
-    function removeListGroupItemWarningClass() {
-        $(".list-group-item").each(function() {
-            $(this).toggleClass("list-group-item-warning", false);
-        })
-    }
-
     $('document').ready(function(){
         // list-group-item 들의 click event
         $(".list-group-item").each(function(){
             $(this).click(function(e){
                 if (e.target == this) {
                     if ($(this).hasClass("list-group-item-warning")) {
-                        // 나를 선택 해제하고, 버튼들도 끈다.
+                        // 나를 선택 해제하고, nav-bar의 버튼들을 끈다.
                         $(this).toggleClass("list-group-item-warning", false);
-                        $(".btn-toggle").hide();
-                        $(".btn-add").show();
+                        $("nav .btn-toggle").hide();
                     } else {
-                        // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
-                        removeListGroupItemWarningClass();
+                        // 기존에 선택된 item을 해제하고, 나를 선택하고, navbar의 버튼들을 켠다.
+                        $(".list-group-item-warning").toggleClass("list-group-item-warning");
                         $(this).toggleClass("list-group-item-warning", true);
-                        $(".btn-detail").show();
-                        $(".btn-lift").show();
-                        $(".btn-fall").show();
-                        $(".btn-finish").show();
-                        $(".btn-add").hide();
-                        $(".btn-post").hide();
-                        $(".btn-cancel").hide();
-                        $("#task-form").slideUp();
+                        $("nav .btn-toggle").show();
                     }
                 }
             });
@@ -134,7 +120,7 @@
         // body 빈공간의 click event
         $("body").click(function(e){
            if(e.target == this) {
-               removeListGroupItemWarningClass();
+               $(".list-group-item-warning").toggleClass("list-group-item-warning");
                $(".btn-toggle").hide();
                $(".btn-add").show();
            }

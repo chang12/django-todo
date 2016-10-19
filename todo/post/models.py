@@ -54,6 +54,9 @@ class Task(models.Model):
 
     objects = TaskManager()
 
+    class Meta:
+        ordering = ['-priority', ]
+
     def __str__(self):
         return self.title
 

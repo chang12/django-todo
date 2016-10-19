@@ -22,7 +22,7 @@ def index(request):
 
     elif request.method == 'GET':
         return render(request, 'post/index.html', {
-            'tasks': Task.objects.filter(is_active=True).order_by('-priority'),
+            'tasks': Task.objects.filter(is_active=True),
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
         })

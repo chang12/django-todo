@@ -23,10 +23,10 @@
         .button-group > button {
             vertical-align: middle;
         }
-        .button-group > button {
+        .btn-toggle {
             display: none;
         }
-        .button-group > .btn-add {
+        .btn-add {
             display: block;
         }
         .list-group-item > div {
@@ -67,13 +67,13 @@
 
 <div class="container">
     <div class="button-group">
-        <button type="button" class="btn btn-warning btn-add">추가</button>
-        <button type="button" class="btn btn-warning btn-post">생성</button>
-        <button type="button" class="btn btn-default btn-cancel">취소</button>
-        <button type="button" class="btn btn-info btn-detail" data-toggle="modal" data-target="#myModal">상세</button>
-        <button type="button" class="btn btn-default btn-lift">상승</button>
-        <button type="button" class="btn btn-default btn-fall">하강</button>
-        <button type="button" class="btn btn-danger btn-finish">완료</button>
+        <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
+        <button type="button" class="btn btn-warning btn-post btn-toggle">생성</button>
+        <button type="button" class="btn btn-default btn-cancel btn-toggle">취소</button>
+        <button type="button" class="btn btn-info btn-detail btn-toggle" data-toggle="modal" data-target="#myModal">상세</button>
+        <button type="button" class="btn btn-default btn-lift btn-toggle">상승</button>
+        <button type="button" class="btn btn-default btn-fall btn-toggle">하강</button>
+        <button type="button" class="btn btn-danger btn-finish btn-toggle">완료</button>
     </div>
     <form action="" method="post" id="task-form">
         {% csrf_token %}
@@ -112,19 +112,19 @@
                     if ($(this).hasClass("list-group-item-warning")) {
                         // 나를 선택 해제하고, 버튼들도 끈다.
                         $(this).toggleClass("list-group-item-warning", false);
-                        $(".button-group > button").hide();
-                        $(".button-group > .btn-add").show();
+                        $(".btn-toggle").hide();
+                        $(".btn-add").show();
                     } else {
                         // 모든 버튼들을 선택 해제하고, 나를 선택하고, 버튼들을 켠다.
                         removeListGroupItemWarningClass();
                         $(this).toggleClass("list-group-item-warning", true);
-                        $(".button-group > .btn-detail").show();
-                        $(".button-group > .btn-lift").show();
-                        $(".button-group > .btn-fall").show();
-                        $(".button-group > .btn-finish").show();
-                        $(".button-group > .btn-add").hide();
-                        $(".button-group > .btn-post").hide();
-                        $(".button-group > .btn-cancel").hide();
+                        $(".btn-detail").show();
+                        $(".btn-lift").show();
+                        $(".btn-fall").show();
+                        $(".btn-finish").show();
+                        $(".btn-add").hide();
+                        $(".btn-post").hide();
+                        $(".btn-cancel").hide();
                         $("#task-form").slideUp();
                     }
                 }
@@ -135,8 +135,8 @@
         $("body").click(function(e){
            if(e.target == this) {
                removeListGroupItemWarningClass();
-               $(".button-group > button").hide();
-               $(".button-group > .btn-add").show();
+               $(".btn-toggle").hide();
+               $(".btn-add").show();
            }
         });
 

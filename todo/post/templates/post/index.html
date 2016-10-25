@@ -65,6 +65,8 @@
         <button type="button" class="btn btn-info btn-detail btn-toggle" data-toggle="modal" data-target="#myModal">상세</button>
         <button type="button" class="btn btn-default btn-lift btn-toggle">상승</button>
         <button type="button" class="btn btn-default btn-fall btn-toggle">하강</button>
+        <button type="button" class="btn btn-default btn-hold-off btn-toggle">보류</button>
+        <button type="button" class="btn btn-default btn-delete btn-toggle">삭제</button>
         <button type="button" class="btn btn-danger btn-finish btn-toggle">완료</button>
     </div>
 </nav>
@@ -230,6 +232,26 @@
             if (clicked_task.length > 0) {
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
+                window.location.href = base_url;
+            }
+        });
+
+        // "보류" button의 click event
+        $(".btn-hold-off").click(function(){
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var id = clicked_task.attr("id");
+                var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
+                window.location.href = base_url;
+            }
+        });
+
+        // "삭제" button의 click event
+        $(".btn-delete").click(function(){
+            var clicked_task = $(".list-group-item-warning");
+            if (clicked_task.length > 0) {
+                var id = clicked_task.attr("id");
+                var base_url = "{% url 'post:delete' 12345 %}".replace(/12345/, id);
                 window.location.href = base_url;
             }
         });

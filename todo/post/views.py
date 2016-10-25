@@ -22,7 +22,7 @@ def index(request):
 
     elif request.method == 'GET':
         return render(request, 'post/index.html', {
-            'tasks': Task.objects.filter(is_active=True),
+            'tasks': Task.objects.filter(status=Task.DOING),
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
         })
@@ -31,7 +31,7 @@ def index(request):
 @staff_member_required()
 def finish(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    task.is_active = False
+    task.status = Task.DONE
     task.save()
     return redirect(reverse('post:index'))
 

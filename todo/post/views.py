@@ -56,3 +56,21 @@ def modify(request, pk):
         task.content = content
         task.save()
     return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def hold_off(request, pk):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, pk=pk)
+        task.status = Task.BACKLOG
+        task.save()
+    return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def delete(request, pk):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, pk=pk)
+        task.status = Task.DELETED
+        task.save()
+    return redirect(reverse('post:index'))

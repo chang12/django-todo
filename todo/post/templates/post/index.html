@@ -61,13 +61,18 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="{% url 'post:index' %}">TODO</a>
         </div>
-        <button type="button" class="btn btn-default navbar-btn" onclick="location.href='{% url 'logout' %}?next={% url 'post:index' %}'">로그아웃</button>
-        <button type="button" class="btn btn-info btn-detail btn-toggle" data-toggle="modal" data-target="#myModal">상세</button>
-        <button type="button" class="btn btn-default btn-lift btn-toggle">상승</button>
-        <button type="button" class="btn btn-default btn-fall btn-toggle">하강</button>
-        <button type="button" class="btn btn-default btn-hold-off btn-toggle">보류</button>
-        <button type="button" class="btn btn-default btn-delete btn-toggle">삭제</button>
-        <button type="button" class="btn btn-danger btn-finish btn-toggle">완료</button>
+        <div class="navbar-nav">
+            <button type="button" class="btn btn-default navbar-btn" onclick="location.href='{% url 'logout' %}?next={% url 'post:index' %}'">로그아웃</button>
+            <button type="button" class="btn btn-info btn-detail btn-toggle navbar-btn" data-toggle="modal" data-target="#myModal">상세</button>
+            <button type="button" class="btn btn-default btn-lift btn-toggle navbar-btn">상승</button>
+            <button type="button" class="btn btn-default btn-fall btn-toggle navbar-btn">하강</button>
+            <button type="button" class="btn btn-default btn-hold-off btn-toggle navbar-btn">보류</button>
+            <button type="button" class="btn btn-default btn-delete btn-toggle navbar-btn">삭제</button>
+            <button type="button" class="btn btn-danger btn-finish btn-toggle navbar-btn">완료</button>
+        </div>
+        <div class="navbar-nav navbar-right">
+            <button type="button" class="btn btn-default navbar-btn">Back Log</button>
+        </div>
     </div>
 </nav>
 

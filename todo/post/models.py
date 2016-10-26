@@ -70,3 +70,8 @@ class Task(models.Model):
 
     def fall_button_id(self):
         return Task.BUTTON_DOWN_TAG + '-' + str(self.pk)
+
+    def start(self):
+        self.status = Task.DOING
+        self.priority = Task.objects.max_priority() + 1
+        self.save()

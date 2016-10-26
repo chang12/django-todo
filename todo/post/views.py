@@ -29,6 +29,13 @@ def index(request):
 
 
 @staff_member_required()
+def backlog(request):
+    return render(request, 'post/backlog.html', {
+        'tasks': Task.objects.filter(status=Task.BACKLOG)
+    })
+
+
+@staff_member_required()
 def finish(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.status = Task.DONE
@@ -72,3 +79,10 @@ def delete(request, pk):
     task.status = Task.DELETED
     task.save()
     return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def start(request, pk):
+    task = get_object_or_404(Task, pk=pk, status=Task.BACKLOG)
+    task.start()
+    return redirect(reverse('post:backlog'))

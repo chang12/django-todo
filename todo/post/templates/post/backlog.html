@@ -64,35 +64,13 @@
         <div class="navbar-nav">
             <button type="button" class="btn btn-default navbar-btn" onclick="location.href='{% url 'logout' %}?next={% url 'post:index' %}'">로그아웃</button>
             <button type="button" class="btn btn-info btn-detail btn-toggle navbar-btn" data-toggle="modal" data-target="#myModal">상세</button>
-            <button type="button" class="btn btn-default btn-lift btn-toggle navbar-btn">상승</button>
-            <button type="button" class="btn btn-default btn-fall btn-toggle navbar-btn">하강</button>
-            <button type="button" class="btn btn-default btn-hold-off btn-toggle navbar-btn">보류</button>
+            <button type="button" class="btn btn-default btn-start btn-toggle navbar-btn">시작</button>
             <button type="button" class="btn btn-default btn-delete btn-toggle navbar-btn">삭제</button>
-            <button type="button" class="btn btn-danger btn-finish btn-toggle navbar-btn">완료</button>
-        </div>
-        <div class="navbar-nav navbar-right">
-            <button type="button" class="btn btn-default navbar-btn" onclick="location.href='{% url "post:backlog" %}'">Back Log</button>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <div class="button-group">
-        <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
-        <button type="button" class="btn btn-warning btn-post btn-toggle">생성</button>
-        <button type="button" class="btn btn-default btn-cancel btn-toggle">취소</button>
-    </div>
-    <form action="" method="post" id="task-form">
-        {% csrf_token %}
-        <div class="form-group">
-            <label id="error-title" for="inputError"></label>
-            <input type="text" class="form-control" placeholder="제목" name="title" id="task-form-title">
-        </div>
-        <div class="form-group">
-            <label id="error-title" for="inputError"></label>
-            <textarea class="form-control" placeholder="내용" name="content" id="task-form-content"></textarea>
-        </div>
-    </form>
     <div class="list-group">
         {% for task in tasks %}
             <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
@@ -129,7 +107,6 @@
            if(e.target == this) {
                $(".list-group-item-warning").toggleClass("list-group-item-warning");
                $(".btn-toggle").hide();
-               $(".btn-add").show();
            }
         });
 
@@ -151,45 +128,6 @@
             // "수정" button으로 초기화한다.
             $(".modal-footer > .btn-modify").show();
             $(".modal-footer > .btn-save").hide();
-        });
-
-        // "추가" button의 click event
-        $(".btn-add").click( function() {
-            $(this).hide();
-            $(".btn-post").show();
-            $(".btn-cancel").show();
-            $("#task-form").slideDown();
-        });
-
-        // "생성" button의 click event
-        $(".btn-post").click( function() {
-            var task_form_data = $("#task-form").serialize();
-            $.post(
-                    "{% url 'post:index' %}",
-                    task_form_data,
-                    function (response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            if (response.title) {
-                                $("#error-title").text(response.title);
-                            }
-                            if (response.content) {
-                                $("#error-content").text(response.content);
-                            }
-                        }
-                    }
-            )
-        });
-
-        // "취소" button의 click event
-        $(".btn-cancel").click( function() {
-            $(this).hide();
-            $(".btn-post").hide();
-            $("#task-form").slideUp();
-            $("#error-title").empty();
-            $("#error-content").empty();
-            $(".btn-add").show();
         });
 
         // "수정" button의 click event
@@ -226,29 +164,9 @@
                         csrfmiddlewaretoken: "{{ csrf_token }}"
                     },
                     function() {
-                        document.location = "{% url 'post:index' %}";
+                        document.location = "{% url 'post:backlog' %}";
                     }
             );
-        });
-
-        // "완료" button의 click event
-        $(".btn-finish").click(function(){
-            var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length > 0) {
-                var id = clicked_task.attr("id");
-                var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
-            }
-        });
-
-        // "보류" button의 click event
-        $(".btn-hold-off").click(function(){
-            var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length > 0) {
-                var id = clicked_task.attr("id");
-                var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
-            }
         });
 
         // "삭제" button의 click event
@@ -261,33 +179,13 @@
             }
         });
 
-        // "상승" button의 click event
-        $(".btn-lift").click(function(){
+        // "" button의 click event
+        $(".btn-start").click(function(){
             var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length == 1) {
-                var above_clicked_task = clicked_task.prev();
-                if (above_clicked_task.length != 0) {
-                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
-                    var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
-                    $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
-                        clicked_task.after(above_clicked_task);
-                    });
-                }
-            }
-        });
-
-        // "하강" button의 click event
-        $(".btn-fall").click(function(){
-            var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length == 1) {
-                var below_clicked_task = clicked_task.next();
-                if (below_clicked_task.length != 0) {
-                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
-                    var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
-                    $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
-                        clicked_task.before(below_clicked_task);
-                    });
-                }
+            if (clicked_task.length > 0) {
+                var id = clicked_task.attr("id");
+                var base_url = "{% url 'post:start' 12345 %}".replace(/12345/, id);
+                window.location.href = base_url;
             }
         });
     })

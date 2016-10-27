@@ -22,16 +22,23 @@ def index(request):
 
     elif request.method == 'GET':
         return render(request, 'post/index.html', {
-            'tasks': Task.objects.filter(is_active=True),
+            'tasks': Task.objects.filter(status=Task.DOING),
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
         })
 
 
 @staff_member_required()
+def backlog(request):
+    return render(request, 'post/backlog.html', {
+        'tasks': Task.objects.filter(status=Task.BACKLOG)
+    })
+
+
+@staff_member_required()
 def finish(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    task.is_active = False
+    task.status = Task.DONE
     task.save()
     return redirect(reverse('post:index'))
 
@@ -56,3 +63,30 @@ def modify(request, pk):
         task.content = content
         task.save()
     return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def hold_off(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    task.status = Task.BACKLOG
+    task.save()
+    return redirect(reverse('post:index'))
+
+
+@staff_member_required()
+def delete(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    original_status = task.status
+    task.status = Task.DELETED
+    task.save()
+    if original_status is Task.DOING:
+        return redirect(reverse('post:index'))
+    else:
+        return redirect(reverse('post:backlog'))
+
+
+@staff_member_required()
+def start(request, pk):
+    task = get_object_or_404(Task, pk=pk, status=Task.BACKLOG)
+    task.start()
+    return redirect(reverse('post:backlog'))

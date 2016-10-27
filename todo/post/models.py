@@ -11,7 +11,7 @@ class TaskManager(models.Manager):
             return self.get_queryset().all().aggregate(models.Max('priority'))['priority__max']
 
     def lift(self, pk):
-        sorted_tasks = self.get_queryset().filter(is_active=True).order_by('-priority')
+        sorted_tasks = self.get_queryset().filter(status=Task.DOING).order_by('-priority')
         for idx, task in enumerate(sorted_tasks):
             if task.pk == int(pk):
                 break
@@ -24,7 +24,7 @@ class TaskManager(models.Manager):
         task.save()
 
     def fall(self, pk):
-        sorted_tasks = self.get_queryset().filter(is_active=True).order_by('priority')
+        sorted_tasks = self.get_queryset().filter(status=Task.DOING).order_by('priority')
         for idx, task in enumerate(sorted_tasks):
             if task.pk == int(pk):
                 break
@@ -45,9 +45,14 @@ class Task(models.Model):
     BUTTON_LIFT_TAG = "lift"
     BUTTON_FALL_TAG = "fall"
 
+    DELETED = -1
+    BACKLOG = 0
+    DOING = 1
+    DONE = 2
+
     title = models.CharField(max_length=50)
     content = models.TextField(blank=True)
-    is_active = models.BooleanField(default=True)
+    status = models.SmallIntegerField(default=DOING)
     priority = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -65,3 +70,8 @@ class Task(models.Model):
 
     def fall_button_id(self):
         return Task.BUTTON_DOWN_TAG + '-' + str(self.pk)
+
+    def start(self):
+        self.status = Task.DOING
+        self.priority = Task.objects.max_priority() + 1
+        self.save()

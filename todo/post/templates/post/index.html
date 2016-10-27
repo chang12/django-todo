@@ -247,17 +247,21 @@
             if (clicked_task.length > 0) {
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
+                $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
+                   clicked_task.remove();
+                });
             }
         });
 
         // "삭제" button의 click event
         $(".btn-delete").click(function(){
             var clicked_task = $(".list-group-item-warning");
-            if (clicked_task.length > 0) {
+            if (clicked_task.length == 1) {
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:delete' 12345 %}".replace(/12345/, id);
-                window.location.href = base_url;
+                $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
+                   clicked_task.remove();
+                });
             }
         });
 

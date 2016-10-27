@@ -76,9 +76,13 @@ def hold_off(request, pk):
 @staff_member_required()
 def delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
+    original_status = task.status
     task.status = Task.DELETED
     task.save()
-    return redirect(reverse('post:index'))
+    if original_status is Task.DOING:
+        return redirect(reverse('post:index'))
+    else:
+        return redirect(reverse('post:backlog'))
 
 
 @staff_member_required()

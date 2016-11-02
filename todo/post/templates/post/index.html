@@ -294,6 +294,37 @@
                 }
             }
         });
-    })
+    });
+
+    // 위, 아래 화살표 누름 이벤트를 낚아챈다.
+    // http://stackoverflow.com/questions/1402698/binding-arrow-keys-in-js-jquery
+    // 버튼 클릭 이벤트를 발생시킨다.
+    $(document).keydown(function(e) {
+        var clicked_task = $(".list-group-item-warning");
+        if (clicked_task.length == 1) {
+            switch(e.which) {
+                case 13: // enter
+                    $(".btn-detail").click();
+                    break;
+                case 38: // up
+                    var above_clicked_task = clicked_task.prev();
+                    if (above_clicked_task.length == 1) {
+                        clicked_task.toggleClass("list-group-item-warning", false);
+                        above_clicked_task.toggleClass("list-group-item-warning", true);
+                    }
+                    break;
+                case 40: // down
+                    var below_clicked_task = clicked_task.next();
+                    if (below_clicked_task.length == 1) {
+                        clicked_task.toggleClass("list-group-item-warning", false);
+                        below_clicked_task.toggleClass("list-group-item-warning", true);
+                    }
+                    break;
+                default:
+                    return;
+            }
+            e.preventDefault();
+        }
+    });
 </script>
 </body>

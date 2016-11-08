@@ -1,3 +1,5 @@
+{% load post_extra_filters %}
+
 <head>
     <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
 
@@ -98,7 +100,7 @@
             <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
                 {{ task.title }}
                 <div class="task-title">{{ task.title }}</div>
-                <div class="task-content">{{ task.content|urlize }}</div>
+                <div class="task-content">{{ task.content|urlize|url_target_blank }}</div>
             </li>
         {% endfor %}
     </div>
@@ -144,7 +146,6 @@
             // task 내용 보여주는 태그들의 내용을 채운다.
             var clicked_task = $(".list-group-item-warning");
             var title = clicked_task.children(".task-title").text();
-            //var content = clicked_task.children(".task-content").text();
             var content = clicked_task.children(".task-content").html();
             $("#task-title").text(title);
             $("#task-content").html(content);

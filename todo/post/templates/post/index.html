@@ -308,7 +308,8 @@
     // 버튼 클릭 이벤트를 발생시킨다.
     $(document).keydown(function(e) {
         var clicked_task = $(".list-group-item-warning");
-        if (clicked_task.length == 1) {
+        var modal_display = $("#myModal").css("display");
+        if (clicked_task.length == 1 && modal_display == "none") {
             switch(e.which) {
                 case 13: // enter
                     $(".btn-detail").click();

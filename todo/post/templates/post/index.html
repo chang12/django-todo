@@ -79,6 +79,9 @@
 </nav>
 
 <div class="container">
+    <div class="alert alert-info" role="alert">
+        <span id="num-of-tasks"><strong></strong></span> 건의 할일들이 대기중입니다.
+    </div>
     <div class="button-group">
         <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
         <button type="button" class="btn btn-warning btn-post btn-toggle">생성</button>
@@ -107,6 +110,9 @@
 </div>
 
 <script>
+    var num_of_tasks = {{ tasks|length }};
+    $("#num-of-tasks").text(num_of_tasks);
+
     $('document').ready(function(){
         // list-group-item 들의 click event
         $(".list-group-item").each(function(){
@@ -244,6 +250,8 @@
                     if (below_task.length == 1) {
                         below_task.toggleClass("list-group-item-warning", true);
                     }
+                    num_of_tasks -= 1;
+                    $("#num-of-tasks").text(num_of_tasks);
                 });
             }
         });
@@ -255,7 +263,9 @@
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
                 $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
-                   clicked_task.remove();
+                    clicked_task.remove();
+                    num_of_tasks -= 1;
+                    $("#num-of-tasks").text(num_of_tasks);
                 });
             }
         });
@@ -267,7 +277,9 @@
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:delete' 12345 %}".replace(/12345/, id);
                 $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
-                   clicked_task.remove();
+                    clicked_task.remove();
+                    num_of_tasks -= 1;
+                    $("#num-of-tasks").text(num_of_tasks);
                 });
             }
         });

@@ -55,7 +55,7 @@ class Task(models.Model):
     status = models.SmallIntegerField(default=DOING)
     priority = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(null=True)
 
     objects = TaskManager()
 

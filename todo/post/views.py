@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
@@ -39,6 +41,7 @@ def backlog(request):
 def finish(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.status = Task.DONE
+    task.updated_at = datetime.now()
     task.save()
     return redirect(reverse('post:index'))
 
@@ -69,6 +72,7 @@ def modify(request, pk):
 def hold_off(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.status = Task.BACKLOG
+    task.updated_at = datetime.now()
     task.save()
     return redirect(reverse('post:index'))
 
@@ -78,6 +82,7 @@ def delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
     original_status = task.status
     task.status = Task.DELETED
+    task.updated_at = datetime.now()
     task.save()
     if original_status is Task.DOING:
         return redirect(reverse('post:index'))

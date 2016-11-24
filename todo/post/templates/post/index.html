@@ -34,6 +34,9 @@
         .list-group-item > div {
             display: none;
         }
+        #content-label {
+            display: none;
+        }
     </style>
 </head>
 
@@ -118,13 +121,24 @@
     </div>
 
     <div id="content-label">
-
+        <div class="alert alert-info" role="alert">
+            <span id="num-of-labels"><strong></strong></span> 개의 라벨
+        </div>
+        <div class="list-group">
+        {% for label in labels %}
+            <li class="list-group-item">
+                <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">Default</span>
+            </li>
+        {% endfor %}
+        </div>
     </div>
 </div>
 
 <script>
     var num_of_tasks = {{ tasks|length }};
     $("#num-of-tasks").text(num_of_tasks);
+    var num_of_labels = {{ labels|length }};
+    $("#num-of-labels").text(num_of_labels);
 
     $('document').ready(function(){
         // nav-tabs element 들의 click event

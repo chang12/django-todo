@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 from .forms import TaskForm
+from .models import Label
 from .models import Task
 
 
@@ -27,6 +28,7 @@ def index(request):
             'tasks': Task.objects.filter(status=Task.DOING),
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
+            'labels': Label.objects.all(),
         })
 
 

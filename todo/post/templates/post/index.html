@@ -79,33 +79,46 @@
 </nav>
 
 <div class="container">
-    <div class="alert alert-info" role="alert">
-        <span id="num-of-tasks"><strong></strong></span> 건의 할일들이 대기중입니다.
+    <div>
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a id="tab-task">Task</a></li>
+            <li role="presentation"><a id="tab-label">Label</a></li>
+        </ul>
     </div>
-    <div class="button-group">
-        <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
-        <button type="button" class="btn btn-warning btn-post btn-toggle">생성</button>
-        <button type="button" class="btn btn-default btn-cancel btn-toggle">취소</button>
+
+    <div id="content-task">
+        <div class="alert alert-info" role="alert">
+            <span id="num-of-tasks"><strong></strong></span> 건의 할일들이 대기중입니다.
+        </div>
+        <div class="button-group">
+            <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
+            <button type="button" class="btn btn-warning btn-post btn-toggle">생성</button>
+            <button type="button" class="btn btn-default btn-cancel btn-toggle">취소</button>
+        </div>
+        <form action="" method="post" id="task-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label id="error-title" for="inputError"></label>
+                <input type="text" class="form-control" placeholder="제목" name="title" id="task-form-title">
+            </div>
+            <div class="form-group">
+                <label id="error-title" for="inputError"></label>
+                <textarea class="form-control" placeholder="내용" name="content" id="task-form-content"></textarea>
+            </div>
+        </form>
+        <div class="list-group">
+            {% for task in tasks %}
+                <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
+                    {{ task.title }}
+                    <div class="task-title">{{ task.title }}</div>
+                    <div class="task-content">{{ task.content|urlize|url_target_blank }}</div>
+                </li>
+            {% endfor %}
+        </div>
     </div>
-    <form action="" method="post" id="task-form">
-        {% csrf_token %}
-        <div class="form-group">
-            <label id="error-title" for="inputError"></label>
-            <input type="text" class="form-control" placeholder="제목" name="title" id="task-form-title">
-        </div>
-        <div class="form-group">
-            <label id="error-title" for="inputError"></label>
-            <textarea class="form-control" placeholder="내용" name="content" id="task-form-content"></textarea>
-        </div>
-    </form>
-    <div class="list-group">
-        {% for task in tasks %}
-            <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
-                {{ task.title }}
-                <div class="task-title">{{ task.title }}</div>
-                <div class="task-content">{{ task.content|urlize|url_target_blank }}</div>
-            </li>
-        {% endfor %}
+
+    <div id="content-label">
+
     </div>
 </div>
 
@@ -114,6 +127,22 @@
     $("#num-of-tasks").text(num_of_tasks);
 
     $('document').ready(function(){
+        // nav-tabs element 들의 click event
+        // Task 탭의 click event
+        $("#tab-task").click(function(){
+            $(this).parent().toggleClass("active", true);
+            $("#tab-label").parent().toggleClass("active", false);
+            $("#content-task").show();
+            $("#content-label").hide();
+        });
+        // Label 탭의 click event
+        $("#tab-label").click(function(){
+            $(this).parent().toggleClass("active", true);
+            $("#tab-task").parent().toggleClass("active", false);
+            $("#content-task").hide();
+            $("#content-label").show();
+        });
+
         // list-group-item 들의 click event
         $(".list-group-item").each(function(){
             $(this).click(function(e){

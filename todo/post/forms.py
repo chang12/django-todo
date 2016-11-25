@@ -1,6 +1,13 @@
 from django import forms
 
+from .models import Label
 from .models import Task
+
+
+class LabelForm(forms.ModelForm):
+    class Meta:
+        model = Label
+        fields = '__all__'
 
 
 class TaskForm(forms.ModelForm):

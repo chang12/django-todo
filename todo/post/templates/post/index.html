@@ -16,7 +16,7 @@
         body {
             padding-top: 70px;
         }
-        #task-form {
+        #task-form, #label-form {
             display: none;
         }
         .button-group {
@@ -28,7 +28,7 @@
         .btn-toggle {
             display: none;
         }
-        .btn-add {
+        .btn-add, .btn-add-label {
             display: block;
         }
         .list-group-item > div {
@@ -111,7 +111,7 @@
         </form>
         <div class="list-group">
             {% for task in tasks %}
-                <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix" style="font-size: 25px;">
+                <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix task-item" style="font-size: 25px;">
                     {{ task.title }}
                     <div class="task-title">{{ task.title }}</div>
                     <div class="task-content">{{ task.content|urlize|url_target_blank }}</div>
@@ -124,10 +124,29 @@
         <div class="alert alert-info" role="alert">
             <span id="num-of-labels"><strong></strong></span> 개의 라벨
         </div>
+        <div class="button-group">
+            <button type="button" class="btn btn-warning btn-add-label btn-toggle">추가</button>
+            <button type="button" class="btn btn-warning btn-post-label btn-toggle">생성</button>
+            <button type="button" class="btn btn-default btn-cancel-label btn-toggle">취소</button>
+        </div>
+        <form action="" method="post" id="label-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label id="error-name" for="inputError"></label>
+                <input type="text" class="form-control" placeholder="이름" name="name" id="label-form-name">
+            </div>
+            <div class="form-group">
+                <label id="error-color" for="inputError"></label>
+                <input type="text" class="form-control" placeholder="색깔" name="color" id="label-form-color">
+            </div>
+        </form>
         <div class="list-group">
         {% for label in labels %}
             <li class="list-group-item">
-                <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">Default</span>
+                <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">{{ label.name }}</span>
+                <span style="float: right;">삭제</span>
+                <span style="float: right; margin-right: 0.75em;">수정</span>
+                <span style="float: right;"></span>
             </li>
         {% endfor %}
         </div>
@@ -158,7 +177,7 @@
         });
 
         // list-group-item 들의 click event
-        $(".list-group-item").each(function(){
+        $(".list-group-item.task-item").each(function(){
             $(this).click(function(e){
                 if (e.target == this) {
                     if ($(this).hasClass("list-group-item-warning")) {
@@ -167,7 +186,7 @@
                         $("nav .btn-toggle").hide();
                     } else {
                         // 기존에 선택된 item을 해제하고, 나를 선택하고, navbar의 버튼들을 켠다.
-                        $(".list-group-item-warning").toggleClass("list-group-item-warning");
+                        $(".list-group-item-warning.task-item").toggleClass("list-group-item-warning");
                         $(this).toggleClass("list-group-item-warning", true);
                         $("nav .btn-toggle").show();
                     }
@@ -181,6 +200,8 @@
                $(".list-group-item-warning").toggleClass("list-group-item-warning");
                $(".btn-toggle").hide();
                $(".btn-add").show();
+               $(".btn-add-label").show();
+               $("#task-form").slideUp();
            }
         });
 
@@ -193,7 +214,7 @@
             $("#task-title").show();
             $("#task-content").show();
             // task 내용 보여주는 태그들의 내용을 채운다.
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             var title = clicked_task.children(".task-title").text();
             var content = clicked_task.children(".task-content").html();
             $("#task-title").text(title);
@@ -253,8 +274,8 @@
             task_title_input.show();
             task_content_input.show();
             // 각 입력 태그의 기본값을 설정한다.
-            var clicked_task_title = $(".list-group-item-warning > .task-title").text();
-            var clicked_task_content = $(".list-group-item-warning > .task-content").text();
+            var clicked_task_title = $(".list-group-item-warning.task-item > .task-title").text();
+            var clicked_task_content = $(".list-group-item-warning.task-item > .task-content").text();
             task_title_input.val(clicked_task_title);
             task_content_input.val(clicked_task_content);
             // "저장" button을 나타낸다.
@@ -266,7 +287,7 @@
         $(".btn-save").click( function() {
             var title = $(".modal-header > input").val();
             var content = $(".modal-body > textarea").val();
-            var id = $(".list-group-item-warning").attr("id")
+            var id = $(".list-group-item-warning.task-item").attr("id")
             var url = "{% url 'post:modify' 12345 %}".replace(/12345/, id);
             $.post(
                     url,
@@ -283,7 +304,7 @@
 
         // "완료" button의 click event
         $(".btn-finish").click(function(){
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var below_task = clicked_task.next();
                 var id = clicked_task.attr("id");
@@ -301,7 +322,7 @@
 
         // "보류" button의 click event
         $(".btn-hold-off").click(function(){
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
@@ -315,7 +336,7 @@
 
         // "삭제" button의 click event
         $(".btn-delete").click(function(){
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var id = clicked_task.attr("id");
                 var base_url = "{% url 'post:delete' 12345 %}".replace(/12345/, id);
@@ -329,7 +350,7 @@
 
         // "상승" button의 click event
         $(".btn-lift").click(function(){
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var above_clicked_task = clicked_task.prev();
                 if (above_clicked_task.length != 0) {
@@ -344,7 +365,7 @@
 
         // "하강" button의 click event
         $(".btn-fall").click(function(){
-            var clicked_task = $(".list-group-item-warning");
+            var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var below_clicked_task = clicked_task.next();
                 if (below_clicked_task.length != 0) {
@@ -356,13 +377,54 @@
                 }
             }
         });
+
+        // Label "추가" button의 click event
+        $(".btn-add-label").click( function() {
+            $(this).hide();
+            $(".btn-post-label").show();
+            $(".btn-cancel-label").show();
+            $("#label-form").slideDown();
+        });
+
+        // Label "생성" button의 click event
+        $(".btn-post-label").click( function() {
+            var label_form_data = $("#label-form")
+                    .find(":input")
+                    .filter(function() {return $(this).val() != ""})
+                    .serialize();
+            $.post(
+                    "{% url 'post:label_create' %}",
+                    label_form_data,
+                    function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            if (response.name) {
+                                $("#error-name").text(response.name);
+                            }
+                            if (response.color) {
+                                $("#error-color").text(response.color);
+                            }
+                        }
+                    }
+            )
+        });
+
+        // Label "취소" button의 click event
+        $(".btn-cancel-label").click( function() {
+            $(this).hide();
+            $(".btn-post-label").hide();
+            $("#label-form").slideUp();
+            $("#error-name").empty();
+            $(".btn-add-label").show();
+        });
     });
 
     // 위, 아래 화살표 누름 이벤트를 낚아챈다.
     // http://stackoverflow.com/questions/1402698/binding-arrow-keys-in-js-jquery
     // 버튼 클릭 이벤트를 발생시킨다.
     $(document).keydown(function(e) {
-        var clicked_task = $(".list-group-item-warning");
+        var clicked_task = $(".list-group-item-warning.task-item");
         var modal_display = $("#myModal").css("display");
         if (clicked_task.length == 1 && modal_display == "none") {
             switch(e.which) {

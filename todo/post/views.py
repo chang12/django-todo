@@ -4,6 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 
+from .forms import LabelForm
 from .forms import TaskForm
 from .models import Label
 from .models import Task
@@ -97,3 +98,17 @@ def start(request, pk):
     task = get_object_or_404(Task, pk=pk, status=Task.BACKLOG)
     task.start()
     return redirect(reverse('post:backlog'))
+
+
+@staff_member_required()
+def label_create(request):
+    form = LabelForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True})
+    else:
+        response_dict = {'success': False}
+        for key, value in form.errors.items():
+            # field 하나에 여러개의 에러가 있다면 첫번째 것만 반환
+            response_dict[key] = value[0]
+        return JsonResponse(response_dict)

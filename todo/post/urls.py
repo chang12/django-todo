@@ -1,6 +1,14 @@
 from django.conf.urls import url
 
-from .views import index, finish, move, modify, hold_off, delete, backlog, start
+from .views import backlog
+from .views import delete
+from .views import finish
+from .views import hold_off
+from .views import index
+from .views import label_create
+from .views import modify
+from .views import move
+from .views import start
 
 urlpatterns = [
     url(r'^$', index, name='index'),
@@ -12,4 +20,6 @@ urlpatterns = [
     url(r'^hold_off/(?P<pk>\d+)$', hold_off, name='hold_off'),
     url(r'^delete/(?P<pk>\d+)$', delete, name='delete'),
     url(r'^start/(?P<pk>\d+)$', start, name='start'),
+
+    url(r'^labels$', label_create, name='label_create'),
 ]

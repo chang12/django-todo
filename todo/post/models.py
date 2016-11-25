@@ -73,14 +73,14 @@ class Task(models.Model):
 
 
 class Label(models.Model):
-    name = models.CharField(max_length=15)
-    color = models.CharField(max_length=7, default="#bfdadc")
+    name = models.CharField(max_length=15, unique=True)
+    color = models.CharField(max_length=7, blank=True, default="#bfdadc")
 
     def font_color(self):
         # 예를 들어 #123456 -> 12, 34, 56 으로 split 하고 -> 18, 52, 86 으로 int 값 변환
         red, green, blue = int(self.color[1:3], 16), int(self.color[3:5], 16), int(self.color[5:7], 16)
         # http://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
         if (red * 0.299 + green * 0.587 + blue * 0.114) > 186:
-            return "#000000"
-        else:
             return "#280800"
+        else:
+            return "#FFFFFF"

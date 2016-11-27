@@ -271,13 +271,9 @@
                         'task_id': task_id
                     },
                     function (response) {
-                        var label_ids = response.label_ids;
-                        $('.list-group-item.task-label').each(function() {
-                            var label_id = $(this).data('id') * 1;
-                            if (label_ids.includes(label_id)) {
-                                $(this).toggleClass('list-group-item-info', true);
-                            }
-                        });
+                        $('.list-group-item.task-label').filter(function() {
+                            return response.label_ids.includes(this.dataset.id * 1);
+                        }).toggleClass('list-group-item-info', true);
                     }
             );
         });

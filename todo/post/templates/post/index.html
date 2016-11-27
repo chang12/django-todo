@@ -172,9 +172,9 @@
         </form>
         <div class="list-group">
         {% for label in labels %}
-            <li class="list-group-item" data-id="{{ label.pk }}">
+            <li class="list-group-item label-item" data-id="{{ label.pk }}">
                 <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">{{ label.name }}</span>
-                <span style="float: right;">삭제</span>
+                <span class="delete" style="float: right;">삭제</span>
                 <span style="float: right; margin-right: 0.75em;">수정</span>
                 <span style="float: right;"></span>
             </li>
@@ -224,11 +224,31 @@
             });
         });
 
+        // Task 의 라벨링 modal 의 label 들의 click event
         $(".list-group-item.task-label").each(function() {
             $(this).click(function() {
                 $(this).toggleClass("list-group-item-info");
             });
         });
+
+        // Label list-group-item 들의 click event
+        $(".list-group-item.label-item > .delete").each(function() {
+            $(this).click(function() {
+                $.post(
+                        "{% url 'post:label_delete' %}",
+                        {
+                            'csrfmiddlewaretoken': "{{ csrf_token }}",
+                            'label_id': $(this).parent().data('id')
+                        },
+                        function (response) {
+                            if (response.success) {
+                                location.reload();
+                            }
+                        }
+                )
+            })
+        });
+
 
         // body 빈공간의 click event
         $("body").click(function(e){

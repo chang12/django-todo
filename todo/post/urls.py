@@ -6,6 +6,7 @@ from .views import finish
 from .views import hold_off
 from .views import index
 from .views import label_create
+from .views import label_delete
 from .views import labeling
 from .views import modify
 from .views import move
@@ -24,4 +25,5 @@ urlpatterns = [
 
     url(r'^labels$', label_create, name='label_create'),
     url(r'^labeling$', labeling, name='labeling'),
+    url(r'^label_delete', label_delete, name='label_delete'),
 ]

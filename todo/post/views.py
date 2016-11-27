@@ -112,3 +112,15 @@ def label_create(request):
             # field 하나에 여러개의 에러가 있다면 첫번째 것만 반환
             response_dict[key] = value[0]
         return JsonResponse(response_dict)
+
+
+@staff_member_required()
+def labeling(request):
+    task_id = request.POST.get('task_id')
+    label_ids = request.POST.getlist('label_ids[]')
+
+    task = Task.objects.get(id=task_id)
+    task.labels.set(label_ids)
+    task.save()
+
+    return JsonResponse({'success': True})

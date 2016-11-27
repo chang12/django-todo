@@ -37,11 +37,16 @@
         #content-label {
             display: none;
         }
+        .box {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
     </style>
 </head>
 
 <body>
-<div id="myModal" class="modal fade" role="dialog">
+<div id="modal-task-detail" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,6 +65,27 @@
         </div>
     </div>
 </div>
+<div id="modal-task-labeling" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <strong>라벨 설정</strong>
+            </div>
+            <div class="modal-body">
+                {% for label in labels %}
+                <li class="list-group-item task-label" data-id="{{ label.pk }}">
+                    <span style="background-color: {{ label.color }};" class="box"></span> {{ label.name }}
+                </li>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-labeling btn-warning">설정</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -68,7 +94,8 @@
         </div>
         <div class="navbar-nav">
             <button type="button" class="btn btn-default navbar-btn" onclick="location.href='{% url 'logout' %}?next={% url 'post:index' %}'">로그아웃</button>
-            <button type="button" class="btn btn-info btn-detail btn-toggle navbar-btn" data-toggle="modal" data-target="#myModal">상세</button>
+            <button type="button" class="btn btn-info btn-labeling-modal btn-toggle navbar-btn" data-toggle="modal" data-target="#modal-task-labeling">라벨링</button>
+            <button type="button" class="btn btn-info btn-detail btn-toggle navbar-btn" data-toggle="modal" data-target="#modal-task-detail">상세</button>
             <button type="button" class="btn btn-default btn-lift btn-toggle navbar-btn">상승</button>
             <button type="button" class="btn btn-default btn-fall btn-toggle navbar-btn">하강</button>
             <button type="button" class="btn btn-default btn-hold-off btn-toggle navbar-btn">보류</button>
@@ -113,6 +140,9 @@
             {% for task in tasks %}
                 <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix task-item" style="font-size: 25px;">
                     {{ task.title }}
+                    {% for label in task.labels.all %}
+                    <span class="label" style="background-color: {{ label.color }}; font-size: 10px; color: {{ label.font_color }}">{{ label.name }}</span>
+                    {% endfor %}
                     <div class="task-title">{{ task.title }}</div>
                     <div class="task-content">{{ task.content|urlize|url_target_blank }}</div>
                 </li>
@@ -176,8 +206,8 @@
             $("#content-label").show();
         });
 
-        // list-group-item 들의 click event
-        $(".list-group-item.task-item").each(function(){
+        // Task list-group-item 들의 click event
+        $(".list-group-item.task-item").each(function() {
             $(this).click(function(e){
                 if (e.target == this) {
                     if ($(this).hasClass("list-group-item-warning")) {
@@ -194,6 +224,12 @@
             });
         });
 
+        $(".list-group-item.task-label").each(function() {
+            $(this).click(function() {
+                $(this).toggleClass("list-group-item-info");
+            });
+        });
+
         // body 빈공간의 click event
         $("body").click(function(e){
            if(e.target == this) {
@@ -206,7 +242,7 @@
         });
 
         // modal 보여질때 event
-        $("#myModal").on('show.bs.modal', function (event) {
+        $("#modal-task-detail").on('show.bs.modal', function (event) {
             // input 태그들을 감춘다.
             $(".modal-header > input").hide();
             $(".modal-body > textarea").hide();
@@ -418,6 +454,26 @@
             $("#error-name").empty();
             $(".btn-add-label").show();
         });
+
+        // Label "설정" button의 click event
+        $(".btn-labeling").click( function() {
+            var task_id = $(".list-group-item-warning.task-item").attr("id");
+            var label_ids = $(".list-group-item-info.task-label").map(function() {return this.dataset.id}).toArray();
+            var url = "{% url 'post:labeling' %}";
+            $.post(
+                    url,
+                    {
+                        'csrfmiddlewaretoken': "{{ csrf_token }}",
+                        'task_id': task_id,
+                        'label_ids[]': label_ids
+                    },
+                    function(response) {
+                        if (response.success) {
+                            document.location = "{% url 'post:index' %}";
+                        }
+                    }
+            );
+        });
     });
 
     // 위, 아래 화살표 누름 이벤트를 낚아챈다.
@@ -425,7 +481,7 @@
     // 버튼 클릭 이벤트를 발생시킨다.
     $(document).keydown(function(e) {
         var clicked_task = $(".list-group-item-warning.task-item");
-        var modal_display = $("#myModal").css("display");
+        var modal_display = $("#modal-task-detail").css("display");
         if (clicked_task.length == 1 && modal_display == "none") {
             switch(e.which) {
                 case 13: // enter

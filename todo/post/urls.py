@@ -6,6 +6,7 @@ from .views import finish
 from .views import hold_off
 from .views import index
 from .views import label_create
+from .views import labeling
 from .views import modify
 from .views import move
 from .views import start
@@ -22,4 +23,5 @@ urlpatterns = [
     url(r'^start/(?P<pk>\d+)$', start, name='start'),
 
     url(r'^labels$', label_create, name='label_create'),
+    url(r'^labeling$', labeling, name='labeling'),
 ]

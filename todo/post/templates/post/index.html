@@ -138,7 +138,7 @@
         </form>
         <div class="list-group">
             {% for task in tasks %}
-                <li id="{{ task.pk }}" class="list-group-item list-group-item-success clearfix task-item" style="font-size: 25px;">
+                <li class="list-group-item list-group-item-success clearfix task-item" style="font-size: 25px;" data-id="{{ task.pk }}">
                     {{ task.title }}
                     {% for label in task.labels.all %}
                     <span class="label" style="background-color: {{ label.color }}; font-size: 10px; color: {{ label.font_color }}">{{ label.name }}</span>
@@ -172,7 +172,7 @@
         </form>
         <div class="list-group">
         {% for label in labels %}
-            <li class="list-group-item">
+            <li class="list-group-item" data-id="{{ label.pk }}">
                 <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">{{ label.name }}</span>
                 <span style="float: right;">삭제</span>
                 <span style="float: right; margin-right: 0.75em;">수정</span>
@@ -260,6 +260,28 @@
             $(".modal-footer > .btn-save").hide();
         });
 
+        // 라벨링 버튼 클릭되서 modal 보여질때 event
+        $("#modal-task-labeling").on('show.bs.modal', function (event) {
+            // 우선 모든 Label 들의 선택 해제
+            $('.list-group-item.task-label').toggleClass('list-group-item-info', false);
+            var task_id = $('.list-group-item-warning.task-item').data('id');
+            $.get(
+                    "{% url 'post:labeling' %}",
+                    {
+                        'task_id': task_id
+                    },
+                    function (response) {
+                        var label_ids = response.label_ids;
+                        $('.list-group-item.task-label').each(function() {
+                            var label_id = $(this).data('id') * 1;
+                            if (label_ids.includes(label_id)) {
+                                $(this).toggleClass('list-group-item-info', true);
+                            }
+                        });
+                    }
+            );
+        });
+
         // "추가" button의 click event
         $(".btn-add").click( function() {
             $(this).hide();
@@ -323,7 +345,7 @@
         $(".btn-save").click( function() {
             var title = $(".modal-header > input").val();
             var content = $(".modal-body > textarea").val();
-            var id = $(".list-group-item-warning.task-item").attr("id")
+            var id = $(".list-group-item-warning.task-item").data('id');
             var url = "{% url 'post:modify' 12345 %}".replace(/12345/, id);
             $.post(
                     url,
@@ -343,7 +365,7 @@
             var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
                 var below_task = clicked_task.next();
-                var id = clicked_task.attr("id");
+                var id = clicked_task.data('id');
                 var base_url = "{% url 'post:finish' 12345 %}".replace(/12345/, id);
                 $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
                     clicked_task.remove();
@@ -360,7 +382,7 @@
         $(".btn-hold-off").click(function(){
             var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
-                var id = clicked_task.attr("id");
+                var id = clicked_task.data('id');
                 var base_url = "{% url 'post:hold_off' 12345 %}".replace(/12345/, id);
                 $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
                     clicked_task.remove();
@@ -374,7 +396,7 @@
         $(".btn-delete").click(function(){
             var clicked_task = $(".list-group-item-warning.task-item");
             if (clicked_task.length == 1) {
-                var id = clicked_task.attr("id");
+                var id = clicked_task.data('id');
                 var base_url = "{% url 'post:delete' 12345 %}".replace(/12345/, id);
                 $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}"}, function (response) {
                     clicked_task.remove();
@@ -390,7 +412,7 @@
             if (clicked_task.length == 1) {
                 var above_clicked_task = clicked_task.prev();
                 if (above_clicked_task.length != 0) {
-                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.attr("id");
+                    var command = "{{ BUTTON_LIFT_TAG }}" + "-" + clicked_task.data('id');
                     var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
                     $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
                         clicked_task.after(above_clicked_task);
@@ -405,7 +427,7 @@
             if (clicked_task.length == 1) {
                 var below_clicked_task = clicked_task.next();
                 if (below_clicked_task.length != 0) {
-                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.attr("id");
+                    var command = "{{ BUTTON_FALL_TAG }}" + "-" + clicked_task.data('id');
                     var base_url = "{% url 'post:move' 'command' %}".replace(/command/, command);
                     $.post(base_url, { csrfmiddlewaretoken: "{{ csrf_token }}" }, function (response) {
                         clicked_task.before(below_clicked_task);
@@ -457,7 +479,7 @@
 
         // Label "설정" button의 click event
         $(".btn-labeling").click( function() {
-            var task_id = $(".list-group-item-warning.task-item").attr("id");
+            var task_id = $(".list-group-item-warning.task-item").data('id');
             var label_ids = $(".list-group-item-info.task-label").map(function() {return this.dataset.id}).toArray();
             var url = "{% url 'post:labeling' %}";
             $.post(

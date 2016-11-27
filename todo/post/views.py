@@ -116,11 +116,17 @@ def label_create(request):
 
 @staff_member_required()
 def labeling(request):
-    task_id = request.POST.get('task_id')
-    label_ids = request.POST.getlist('label_ids[]')
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id')
+        label_ids = request.POST.getlist('label_ids[]')
 
-    task = Task.objects.get(id=task_id)
-    task.labels.set(label_ids)
-    task.save()
+        task = Task.objects.get(id=task_id)
+        task.labels.set(label_ids)
+        task.save()
 
-    return JsonResponse({'success': True})
+        return JsonResponse({'success': True})
+    else:
+        task_id = request.GET.get('task_id')
+        task = Task.objects.get(id=task_id)
+        label_ids = list(task.labels.values_list('id', flat=True))
+        return JsonResponse({'label_ids': label_ids})

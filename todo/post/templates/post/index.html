@@ -191,9 +191,13 @@
         <div class="list-group">
             {% for label in labels %}
             <li class="list-group-item label-item" data-id="{{ label.pk }}" data-count="{{ label.task_set.count }}">
-                <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}">{{ label.name }}</span>
+                <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}" data-color="{{ label.color }}">{{ label.name }}</span>
+                <input type="text" name="name" style="display: none;">
+                <input type="text" name="color" style="display: none;">
                 <a class="delete" style="float: right;" data-toggle="modal" data-target="#modal-label-delete">삭제</a>
                 <a class="edit" style="float: right; margin-right: 0.75em;">수정</a>
+                <a class="cancel" style="float: right; display: none;">취소</a>
+                <a class="save" style="float: right; margin-right: 0.75em; display: none;">저장</a>
             </li>
             {% endfor %}
         </div>
@@ -247,6 +251,54 @@
                 $(this).toggleClass("list-group-item-info");
             });
         });
+
+        // label item 의 수정 버튼 event
+        $(".list-group-item.label-item > .edit").each(function() {
+            $(this).click(function() {
+                var label_item = $(this).siblings("span");
+                $(this).siblings("input").show();
+                $(this).siblings("input[name='name']").val(label_item.text());
+                $(this).siblings("input[name='color']").val(label_item.data("color"));
+                $(this).siblings(".save").show();
+                $(this).siblings(".cancel").show();
+                label_item.hide();
+                $(this).siblings(".delete").hide();
+                $(this).hide();
+            })
+        });
+
+        // label item 의 취소 버튼 event
+        $(".list-group-item.label-item > .cancel").each(function() {
+            $(this).click(function() {
+                $(this).siblings("span").show();
+                $(this).siblings(".edit").show();
+                $(this).siblings(".delete").show();
+
+                $(this).siblings("input").hide();
+                $(this).hide();
+                $(this).siblings(".save").hide();
+            });
+        });
+
+        // label item 의 저장 버튼 event
+        $(".list-group-item.label-item > .save").each(function() {
+            $(this).click(function() {
+                var label_id = $(this).parent().data('id');
+                $.post(
+                        "{% url 'post:label_modify' 12345 %}".replace(/12345/, label_id),
+                        {
+                            'csrfmiddlewaretoken': "{{ csrf_token }}",
+                            'name': $(this).siblings("input[name='name']").val(),
+                            'color': $(this).siblings("input[name='color']").val()
+                        },
+                        function (response) {
+                            if (response.success) {
+                                location.reload();
+                            }
+                        }
+                )
+            });
+        })
 
         // label-delete modal 의 삭제 버튼 click event
         $("#btn-label-delete").click(function() {

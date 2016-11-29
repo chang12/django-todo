@@ -115,6 +115,18 @@ def label_create(request):
 
 
 @staff_member_required()
+def label_modify(request, pk):
+    if request.method == 'POST':
+        label = Label.objects.get(pk=pk)
+        name = request.POST.get('name', label.name)
+        color = request.POST.get('color', label.color)
+        label.name = name
+        label.color = color
+        label.save()
+    return JsonResponse({'success': True})
+
+
+@staff_member_required()
 def label_delete(request):
     label_id = request.POST.get('label_id')
     label = Label.objects.get(id=label_id)

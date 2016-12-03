@@ -9,6 +9,18 @@ class LabelForm(forms.ModelForm):
         model = Label
         fields = '__all__'
 
+    def clean_color(self):
+        color = self.cleaned_data['color']
+        if len(color) != 7:
+            raise forms.ValidationError("color 값을 hex code 로 입력해주세요.")
+        if color[0] != '#':
+            raise forms.ValidationError("color 값을 hex code 로 입력해주세요.")
+        try:
+            int(color[1:], 16)
+        except ValueError:
+            raise forms.ValidationError("color 값을 hex code 로 입력해주세요.")
+        return color
+
 
 class TaskForm(forms.ModelForm):
     class Meta:

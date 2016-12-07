@@ -25,11 +25,19 @@ def index(request):
             return JsonResponse(response_dict)
 
     elif request.method == 'GET':
+        tasks = Task.objects.filter(status=Task.DOING)
+        label_id = request.GET.get('label_id', None)
+        is_filtered = False
+        if label_id is not None:
+            tasks = tasks.filter(labels=label_id)
+            is_filtered = True
+
         return render(request, 'post/index.html', {
-            'tasks': Task.objects.filter(status=Task.DOING),
+            'tasks': tasks,
             'BUTTON_LIFT_TAG': Task.BUTTON_LIFT_TAG,
             'BUTTON_FALL_TAG': Task.BUTTON_FALL_TAG,
             'labels': Label.objects.all(),
+            'is_filtered': is_filtered,
         })
 
 

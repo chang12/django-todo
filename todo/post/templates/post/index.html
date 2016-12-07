@@ -136,7 +136,10 @@
 
     <div id="content-task">
         <div class="alert alert-info" role="alert">
-            <span id="num-of-tasks"><strong></strong></span> 건의 할일들이 대기중입니다.
+            {% if is_filtered %}
+            (라벨로 필터링된 결과입니다)
+            {% endif %}
+            <p><span id="num-of-tasks"><strong></strong></span> 건의 할일들이 대기중입니다.</p>
         </div>
         <div class="button-group">
             <button type="button" class="btn btn-warning btn-add btn-toggle">추가</button>
@@ -194,10 +197,11 @@
                 <span class="label" style="background-color: {{ label.color }}; font-size: 20px; color: {{ label.font_color }}" data-color="{{ label.color }}">{{ label.name }}</span>
                 <input type="text" name="name" style="display: none;">
                 <input type="text" name="color" style="display: none;">
-                <a class="delete" style="float: right;" data-toggle="modal" data-target="#modal-label-delete">삭제</a>
-                <a class="edit" style="float: right; margin-right: 0.75em;">수정</a>
-                <a class="cancel" style="float: right; display: none;">취소</a>
-                <a class="save" style="float: right; margin-right: 0.75em; display: none;">저장</a>
+                <a class="delete pull-right" data-toggle="modal" data-target="#modal-label-delete">삭제</a>
+                <a class="edit pull-right" style="margin-right: 0.75em;">수정</a>
+                <a class="cancel pull-right" style="display: none;">취소</a>
+                <a class="save pull-right" style="margin-right: 0.75em; display: none;">저장</a>
+                <a href="{% url 'post:index' %}?label_id={{ label.id }}" class="pull-right" style="margin-right: 0.75em;">{{ label.num_doing_tasks }} tasks</a>
             </li>
             {% endfor %}
         </div>

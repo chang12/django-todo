@@ -16,6 +16,9 @@ class Label(models.Model):
         else:
             return "#FFFFFF"
 
+    def num_doing_tasks(self):
+        return self.task_set.filter(status=Task.DOING).count()
+
     def __str__(self):
         return self.name
 
